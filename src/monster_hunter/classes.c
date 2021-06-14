@@ -49,6 +49,100 @@ Clase* clase_init(int type)
     return clase;
 }
 
+void estocada(Clase* attacker, Clase* enemy)
+{
+    enemy -> current_health -= 1000;
+    if (enemy->current_health <= 0)
+    {
+        printf("El jugador murió\n");
+    }
+    enemy -> blood = 1;
+}
+
+void corte_cruzado(Clase* attacker, Clase* enemy)
+{
+    enemy -> current_health -= 3000;
+    if (enemy->current_health <= 0)
+    {
+        printf("El jugador murió\n");
+    }
+}
+
+void distraer(Clase* attacker, Clase* enemy)
+{
+    //el enemy en el proximo turno debe atacar al último
+    //cazador en ocupar distraer    
+}
+
+void curar(Clase* attacker, Clase* friend)
+{
+    //no se puede tener más que la vida inicial
+    if ((friend -> current_health + 2000) >= friend->initial_health)
+    {
+        friend -> current_health = friend -> initial_health;
+    }
+    else
+    {
+        friend -> current_health += 2000;
+    }
+}
+
+void destello_regenerador(Clase* attacker, Clase* friend)
+{
+    int num = (rand() % (2000 - 750 + 1)) + 750; //numero random
+    int regeneracion = (int)(num/2) + 1; // redondeo hacia arriba
+    //no se puede tener más que la vida inicial
+    if ((friend -> current_health + regeneracion) >= friend->initial_health)
+    {
+        friend -> current_health = friend -> initial_health;
+    }
+    else
+    {
+        friend -> current_health += regeneracion;
+    }
+}
+
+void descarga_vital(Clase* attacker, Clase* enemy)
+{
+    int dano = attacker -> initial_health - attacker -> current_health;
+    enemy -> current_health -= dano;
+    if (enemy->current_health <= 0)
+    {
+        printf("El jugador murió\n");
+    }
+}
+
+void inyeccion_sql(Clase* attacker, Clase* enemy)
+{
+    // bool de inyeccion y numero que dure 2 turnos? para duplicar mientras bool sea true
+}
+
+void ataque_ddos(Clase* attacker, Clase* enemy)
+{
+    enemy -> current_health -= 1500;
+    if (enemy->current_health <= 0)
+    {
+        printf("El jugador murió\n");
+    }
+}
+
+
+void fuerza_bruta(Clase* attacker, Clase* enemy)
+{
+    attacker -> fuerza_bruta ++;
+    if (attacker -> fuerza_bruta == 3)
+    {
+        enemy->current_health -= 10000;
+        if (enemy->current_health <= 0)
+        {
+            printf("El jugador murió\n");
+        }
+        attacker -> fuerza_bruta = 0;
+    }
+    
+}
+
+
 void ruzgar(Clase* attacker, Clase* enemy)
 {
     enemy -> current_health -= 1000;
