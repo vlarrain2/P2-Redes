@@ -58,7 +58,9 @@ void estocada(Clase* attacker, Clase* enemy)
     {
         printf("El jugador murió\n");
     }
-    enemy -> blood = 1;
+    if (enemy -> bleeding < 3) {
+        enemy -> bleeding++;
+    }
 }
 
 void corte_cruzado(Clase* attacker, Clase* enemy)
@@ -91,10 +93,13 @@ void curar(Clase* attacker, Clase* friend)
     }
 }
 
-void destello_regenerador(Clase* attacker, Clase* friend)
+void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Clase* enemy)
 {
     int num = (rand() % (2000 - 750 + 1)) + 750; //numero random
-    int regeneracion = (int)(num/2) + 1; // redondeo hacia arriba
+    int regeneracion = (int)(num/2); // redondeo hacia arriba
+    
+    int num_friend = rand() % (num_friends + 1);
+    Clase* friend = friends[num_friend];
     //no se puede tener más que la vida inicial
     if ((friend -> current_health + regeneracion) >= friend->initial_health)
     {
@@ -104,11 +109,13 @@ void destello_regenerador(Clase* attacker, Clase* friend)
     {
         friend -> current_health += regeneracion;
     }
+
+    enemy -> current_health -= num;
 }
 
 void descarga_vital(Clase* attacker, Clase* enemy)
 {
-    int dano = attacker -> initial_health - attacker -> current_health;
+    int dano = 2 * (attacker -> initial_health - attacker -> current_health);
     enemy -> current_health -= dano;
     if (enemy->current_health <= 0)
     {
@@ -116,11 +123,11 @@ void descarga_vital(Clase* attacker, Clase* enemy)
     }
 }
 
-void inyeccion_sql(Clase* attacker, Clase* enemy)
+void inyeccion_sql(Clase* attacker, Clase* friend)
 {
     // bool de inyeccion y numero que dure 2 turnos? para duplicar mientras bool sea true
-    enemy -> duplicated_attack = 1;
-    enemy -> rounds_duplicated = 0;
+    friend -> duplicated_attack = 1;
+    friend -> rounds_duplicated = 0;
 }
 
 void ataque_ddos(Clase* attacker, Clase* enemy)

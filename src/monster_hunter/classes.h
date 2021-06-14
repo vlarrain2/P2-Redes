@@ -14,8 +14,7 @@ struct clase
     int* prev_actions;  // Esto creo que hay que hacerlo de un tamaño definido
     // La idea es hacer un array con las últimas habilidades utilizadas por la clase
     int last_action;
-    int bleeding; //puede ser de 0 a 3, luego de 3 se reinicia y blood pasa a 0.
-    bool blood; // 0: no, 1: si
+    int bleeding; //puede ser de 0 a 3
     bool intoxicated;  // 0: no, 1: si
     int rounds_intoxicated;
     int fuerza_bruta; //cuando llega a 3 hace daño
