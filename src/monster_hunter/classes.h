@@ -19,6 +19,10 @@ struct clase
     bool intoxicated;  // 0: no, 1: si
     int rounds_intoxicated;
     int fuerza_bruta; //cuando llega a 3 hace daño
+    bool duplicated_attack; // 0: no, 1: si
+    int rounds_duplicated; // cuando llega a 2 duplicated_attack se vuekve a 0
+    bool distracted; // 0: no, 1: si
+    Clase* target; //indica el cazador que debe ser atacado en el próximo turno si está distraido
 };
 
 Clase* clase_init(int type);

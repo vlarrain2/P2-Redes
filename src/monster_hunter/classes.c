@@ -49,6 +49,8 @@ Clase* clase_init(int type)
     return clase;
 }
 
+// Clases
+
 void estocada(Clase* attacker, Clase* enemy)
 {
     enemy -> current_health -= 1000;
@@ -71,7 +73,9 @@ void corte_cruzado(Clase* attacker, Clase* enemy)
 void distraer(Clase* attacker, Clase* enemy)
 {
     //el enemy en el proximo turno debe atacar al último
-    //cazador en ocupar distraer    
+    //cazador en ocupar distraer  
+    enemy -> distracted = 1;
+    enemy -> target = attacker;
 }
 
 void curar(Clase* attacker, Clase* friend)
@@ -115,6 +119,8 @@ void descarga_vital(Clase* attacker, Clase* enemy)
 void inyeccion_sql(Clase* attacker, Clase* enemy)
 {
     // bool de inyeccion y numero que dure 2 turnos? para duplicar mientras bool sea true
+    enemy -> duplicated_attack = 1;
+    enemy -> rounds_duplicated = 0;
 }
 
 void ataque_ddos(Clase* attacker, Clase* enemy)
@@ -142,6 +148,7 @@ void fuerza_bruta(Clase* attacker, Clase* enemy)
     
 }
 
+// Monstruos
 
 void ruzgar(Clase* attacker, Clase* enemy)
 {
