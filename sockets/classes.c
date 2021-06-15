@@ -259,34 +259,47 @@ void copia(Clase* attacker, Clase* enemy)
     }
 }
 
+void reprobatron(Clase* attacker, Clase* enemy)
+{
+    enemy -> reprobado = 1;
+}
+
 void sudo_rm_rf(Clase* attacker)
 {
     for (int i = 0; i < 4; i++)
     {
         if (active_players[i] != NULL)
         {
-            if(active_players[i] -> current_health >= 100 * rounds){enemy->current_health -= 100 * rounds;}
-            else{active_players[i] -> current_health = 0}
+            if (active_players[i] -> reprobado == 1)
+            {
+                if(active_players[i] -> current_health >= 1.5 * 100 * rounds){enemy->current_health -= 1.5 * 100 * rounds;}
+                else{active_players[i] -> current_health = 0}
+            }
+            else
+            {
+                if(active_players[i] -> current_health >= 100 * rounds){enemy->current_health -= 100 * rounds;}
+                else{active_players[i] -> current_health = 0}
+            }
         }
     }
     rounds = 0;
 }
 
-void great_jagruz_attack(Clase* attacker, Clase* enemy)
+void great_jagruz_turn(Clase* attacker, Clase* enemy)
 {
     int dice = rand() % 2;
     if (dice == 0){ruzgar(attacker, enemy);}
     else {coletazo(attacker, enemy);}
 }
 
-void ruzalos_attack(Clase* attacker, Clase* enemy)
+void ruzalos_turn(Clase* attacker, Clase* enemy)
 {
     int dice = rand() % 5;
     if (dice < 2){salto(attacker, enemy);}
     else {espina_venenosa(attacker, enemy);}
 }
 
-void ruzalos_attack(Clase* attacker, Clase* enemy)
+void ruzalos_turn(Clase* attacker, Clase* enemy)
 {
     int dice = rand() % 5;
     if (dice < 2){copia(attacker, enemy);}

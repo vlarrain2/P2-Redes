@@ -12,7 +12,7 @@ struct clase
 {
     int type;  // 0: Cazador, 1: Médico, 2: Hacker, 3: GreatJagRuz, 4: Ruzalos, 5: Ruiz
     int initial_health;
-    int current_health;
+    float current_health;
     int* prev_actions;  // Esto creo que hay que hacerlo de un tamaño definido
     // La idea es hacer un array con las últimas habilidades utilizadas por la clase
     int last_action;
@@ -23,6 +23,7 @@ struct clase
     bool duplicated_attack; // 0: no, 1: si
     int rounds_duplicated; // cuando llega a 2 duplicated_attack se vuekve a 0
     bool distracted; // 0: no, 1: si
+    bool reprobado;// 0: normal, 1: reprobado
     Clase* target; //indica el cazador que debe ser atacado en el próximo turno si está distraido
 };
 
@@ -49,4 +50,5 @@ void espina_venenosa(Clase* attacker, Clase* enemy);
 void reprobatron(Clase* attacker, Clase* enemy);
 int introduce_player(Clase* player);
 void sudo_rm_rf(Clase* attacker);
+void reprobatron(Clase* attacker, Clase* enemy);
 bool active_class(int type);
