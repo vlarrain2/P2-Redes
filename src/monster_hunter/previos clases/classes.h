@@ -32,7 +32,7 @@ void corte_cruzado(Clase* attacker, Clase* enemy);
 void distraer(Clase* attacker, Clase* enemy);
 
 void curar(Clase* attacker, Clase* friend);
-void destello_regenerador(Clase* attacker, Clase* friend);
+void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Clase* enemy);
 void descarga_vital(Clase* attacker, Clase* enemy);
 
 void inyeccion_sql(Clase* attacker, Clase* enemy);
