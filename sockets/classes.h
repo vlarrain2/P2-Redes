@@ -22,6 +22,7 @@ struct clase
     int fuerza_bruta; //cuando llega a 3 hace daño
     bool duplicated_attack; // 0: no, 1: si
     int rounds_duplicated; // cuando llega a 2 duplicated_attack se vuekve a 0
+    bool jumped; // 0: no ha usado la habilidad "salto", 1: ya uso la habilidad "salto"
     bool distracted; // 0: no, 1: si
     bool reprobado;// 0: normal, 1: reprobado
     Clase* target; //indica el cazador que debe ser atacado en el próximo turno si está distraido
