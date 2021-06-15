@@ -212,6 +212,7 @@ void coletazo(Clase* attacker)
             else {active_players[i] -> current_health -= 500;}
             if (active_players[i] -> current_health <= 0)
             {
+                active_players[i] -> current_health = 0;
                 printf("El jugador murió\n");
             }
         }

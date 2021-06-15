@@ -45,7 +45,7 @@ void fuerza_bruta(Clase* attacker, Clase* enemy);
 
 //Monstruos
 void ruzgar(Clase* attacker, Clase* enemy);
-void coletazo(Clase* attacker, Clase** enemies_array, int enemies_length);
+void coletazo(Clase* attacker);
 void salto(Clase* attacker, Clase* enemy);
 void espina_venenosa(Clase* attacker, Clase* enemy);
 void reprobatron(Clase* attacker, Clase* enemy);
