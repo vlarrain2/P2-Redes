@@ -45,8 +45,28 @@ Clase* clase_init(int type)
         clase -> initial_health = 25000;
         clase -> current_health = clase -> initial_health;
     }
+    introduce_player(type);
 
     return clase;
+}
+
+
+int introduce_player(int type) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
+{
+    for (int i = 0; i < 5; i++){
+        if (active_players[i] != NULL){active_players[i] = type;}
+        return 0;
+    }
+    return 1;
+}
+
+bool active_class(int type) //revisa si existe un jugador de clase type activo
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (active_players[i] == type){return true;}
+    }
+    return false;
 }
 
 // Clases
@@ -156,7 +176,6 @@ void fuerza_bruta(Clase* attacker, Clase* enemy)
 }
 
 // Monstruos
-
 void ruzgar(Clase* attacker, Clase* enemy)
 {
     enemy -> current_health -= 1000;
@@ -210,5 +229,34 @@ void espina_venenosa(Clase* attacker, Clase* enemy)
 
 void copia(Clase* attacker, Clase* enemy)
 {
-    // Hay que es
+    int classes = [0, 0, 0];
+    for (int i = 0; i < 3; i++)
+    {
+        if (active_class(i)){classes[i] = 1;}
+    }
+    while (1)
+    {
+        int dice = rand() % 3;
+        if (classes[dice] == 1 && dice == 0)
+        {
+            int spell_dice = rand() % 3;
+            if (spell_dice == 0){return estocada(attacker, enemy);}
+            else if (spell_dice == 1){return corte_cruzado(attacker, enemy);}
+            else {return distraer(attacker, enemy);}//tiene que distraer a un jugador
+        }
+        else if (classes[dice] == 1 && dice == 1)
+        {
+            int spell_dice = rand() % 3;
+            if (spell_dice == 0){return curar(attacker, attacker);} //se tiene que healear a si mismo
+            else if (spell_dice == 1){return destello_regenerador(attacker, enemy);} // revisar como funciona destello_regenerador para hacer que el Ruz se healee a si mismo cuando copie esta habilidad
+            else {return descarga_vital(attacker, enemy);}
+        }
+        else if (classes[dice] == 1 && dice == 3)
+        {
+            int spell_dice = rand() % 3;
+            if (spell_dice == 0){return inyeccion_sql(attacker, attacker);}
+            else if (spell_dice == 1){return ataque_ddos(attacker, enemy);} 
+            else {return fuerza_bruta(attacker, enemy);}
+        }
+    }
 }
