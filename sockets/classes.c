@@ -45,16 +45,15 @@ Clase* clase_init(int type)
         clase -> initial_health = 25000;
         clase -> current_health = clase -> initial_health;
     }
-    introduce_player(type);
-
+    introduce_player(clase);
     return clase;
 }
 
 
-int introduce_player(int type) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
+int introduce_player(Clase* player) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
 {
-    for (int i = 0; i < 5; i++){
-        if (active_players[i] != NULL){active_players[i] = type;}
+    for (int i = 0; i < 4; i++){
+        if (active_players[i] != NULL){active_players[i] = player;}
         return 0;
     }
     return 1;
@@ -62,9 +61,9 @@ int introduce_player(int type) //pobla la cantidad de jugadores activos cuando s
 
 bool active_class(int type) //revisa si existe un jugador de clase type activo
 {
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 4; i++)
     {
-        if (active_players[i] == type){return true;}
+        if (active_players[i]->type == type){return true;}
     }
     return false;
 }
@@ -172,7 +171,6 @@ void fuerza_bruta(Clase* attacker, Clase* enemy)
         }
         attacker -> fuerza_bruta = 0;
     }
-    
 }
 
 // Monstruos
@@ -259,4 +257,39 @@ void copia(Clase* attacker, Clase* enemy)
             else {return fuerza_bruta(attacker, enemy);}
         }
     }
+}
+
+void sudo_rm_rf(Clase* attacker)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (active_players[i] != NULL)
+        {
+            if(active_players[i] -> current_health >= 100 * rounds){enemy->current_health -= 100 * rounds;}
+            else{active_players[i] -> current_health = 0}
+        }
+    }
+    rounds = 0;
+}
+
+void great_jagruz_attack(Clase* attacker, Clase* enemy)
+{
+    int dice = rand() % 2;
+    if (dice == 0){ruzgar(attacker, enemy);}
+    else {coletazo(attacker, enemy);}
+}
+
+void ruzalos_attack(Clase* attacker, Clase* enemy)
+{
+    int dice = rand() % 5;
+    if (dice < 2){salto(attacker, enemy);}
+    else {espina_venenosa(attacker, enemy);}
+}
+
+void ruzalos_attack(Clase* attacker, Clase* enemy)
+{
+    int dice = rand() % 5;
+    if (dice < 2){copia(attacker, enemy);}
+    else if (dice == 2){reprobatron(attacker, enemy);}
+    else{sudo_rm_rf(attacker);}
 }
