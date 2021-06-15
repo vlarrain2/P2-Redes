@@ -5,6 +5,7 @@
 
 struct clase;
 typedef struct clase Clase;
+int active_players = [NULL, NULL, NULL, NULL, NULL];
 
 struct clase
 {
@@ -24,3 +25,5 @@ void ruzgar(Clase* attacker, Clase* enemy);
 void coletazo(Clase* attacker, Clase** enemies_array, int enemies_length);
 void salto(Clase* attacker, Clase* enemy);
 void espina_venenosa(Clase* attacker, Clase* enemy);
+int introduce_player(int type);
+bool active_class(int type);
