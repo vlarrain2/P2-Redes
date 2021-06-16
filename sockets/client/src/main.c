@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "conection.h"
 #include "comunication.h"
-#include "../../classes.h"
+//#include "../../classes.h"
 
 char * get_input(){
   char * response = malloc(20);
@@ -32,20 +32,52 @@ int main (int argc, char *argv[]){
 
     if (msg_code == 1) { //Recibimos un mensaje del servidor
       char * message = client_receive_payload(server_socket);
-      printf("El servidor dice: %s\n", message);
+      printf("%s\n", message);
       free(message);
 
-      printf("¿Qué desea hacer?\n   1)Enviar mensaje al servidor\n   2)Enviar mensaje al otro cliente\n");
+      printf("####################\n¿Qué clase desea?\n   1)Cazador\n   2)Médico\n   3)Hacker\n####################\n");
       int option = getchar() - '0';
       getchar(); //Para capturar el "enter" que queda en el buffer de entrada stdin
-
-      printf("Ingrese su mensaje: ");
-      char * response = get_input();
-
-      client_send_message(server_socket, option, response);
+      char* class;
+      if (option == 1){
+        class = "Cazador";
+      }
+      else if (option == 2){
+        class = "Médico";
+      }
+      else if (option == 3){
+        class = "Hacker";
+      }
+      client_send_message(server_socket, 1, class);
     }
 
-    if (msg_code == 2) { //Recibimos un mensaje que proviene del otro cliente
+    if (msg_code == 2) { //Recibimos un mensaje del servidor pidiendo nombre
+      char * message = client_receive_payload(server_socket);
+      printf("El servidor dice que soy de clase: %s\n", message);
+      free(message);
+
+      int sure = 0;
+      char* name;
+      printf("Ingrese nombre de usuario:");
+      name = get_input();
+      // while (sure == 0){
+      //   printf("Ingrese nombre de usuario:");
+      //   char * name = get_input();
+      //   printf("Tu nombre es %s, ¿estas seguro? (y/n)\n", name);
+      //   sure = getchar() - '0';
+      //   getchar();
+      //   while (sure != 0 && sure != 1){
+      //     printf("INSTRUCCION INVALIDA. Tu nombre es %s, ¿estas seguro? (1:si, 0: no))\n", name);
+      //     sure = getchar() - '0';
+      //     getchar();
+      //   }
+      // }
+
+      client_send_message(server_socket, 3, name);
+
+    }
+
+    if (msg_code == 3) { //Recibimos un mensaje que proviene del otro cliente
       char * message = client_receive_payload(server_socket);
       printf("El otro cliente dice: %s\n", message);
       free(message);
