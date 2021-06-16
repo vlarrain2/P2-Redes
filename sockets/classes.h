@@ -26,6 +26,7 @@ struct clase
     bool jumped; // 0: no ha usado la habilidad "salto", 1: ya uso la habilidad "salto"
     bool distracted; // 0: no, 1: si
     bool reprobado;// 0: normal, 1: reprobado
+    bool líder;
     Clase* target; //indica el cazador que debe ser atacado en el próximo turno si está distraido
 };
 

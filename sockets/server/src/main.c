@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
   PlayersInfo * players_info = prepare_sockets_and_get_clients(IP, PORT);
 
   // Le enviamos al primer cliente un mensaje de bienvenida
-  char * welcome = "Bienvenido Cliente 1!!";
+  char * welcome = "Bienvenido Juagor 1! Serás designado como líder del grupo";
   server_send_message(players_info->socket_c1, 1, welcome);
 
   // Guardaremos los sockets en un arreglo e iremos alternando a quién escuchar.
