@@ -140,7 +140,6 @@ void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Cla
     {
         friend -> current_health += regeneracion;
     }
-
     enemy -> current_health -= num;
 }
 
@@ -343,4 +342,24 @@ void ruiz_turn(Clase* attacker, Clase* enemy)
     if (dice < 2){copia(attacker, enemy);}
     else if (dice == 2){reprobatron(attacker, enemy);}
     else{sudo_rm_rf(attacker);}
+}
+
+void game_statistics(Clase* enemy)
+{
+    //3: GreatJagRuz, 4: Ruzalos, 5: Ruiz
+    char** type[6];
+    type[0] = "Cazador";
+    type[1] = "Médico";
+    type[2] = "Hacker";
+    type[3] = "GreatJagRuz";
+    type[4] = "Ruzalos";
+    type[5] = "Ruiz";
+    printf("______ESTE ES EL ESTADO ACTUAL DEL JUEGO______:\n");
+    for (int i = 0; i < 4; i++)
+    {
+        if (active_players[i] != NULL)
+        {printf("%s : %s  -> VIDA ACTUAL = %d / %d [%f] \n", active_players[i]->name, type[active_players[i] -> type], active_players[i] -> current_health, active_players[i] -> initial_health, (active_players[i] -> current_health / active_players[i] -> initial_health));}
+    }
+    printf("%s  -> VIDA ACTUAL = %d / %d [%f]", type[enemy -> type], enemy -> current_health, enemy -> initial_health, (enemy -> current_health / enemy -> initial_health));
+    printf("_____________________________\n");
 }

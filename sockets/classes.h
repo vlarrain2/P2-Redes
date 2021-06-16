@@ -10,6 +10,7 @@ int rounds = 0;
 
 struct clase
 {
+    char* name;// falta hacer que se ponga, agregar en el init¡?¡?
     int type;  // 0: Cazador, 1: Médico, 2: Hacker, 3: GreatJagRuz, 4: Ruzalos, 5: Ruiz
     int initial_health;
     float current_health;
@@ -53,3 +54,5 @@ int introduce_player(Clase* player);
 void sudo_rm_rf(Clase* attacker);
 void reprobatron(Clase* attacker, Clase* enemy);
 bool active_class(int type);
+void game_statistics();
+void cazador_turn(Clase* cazador);
