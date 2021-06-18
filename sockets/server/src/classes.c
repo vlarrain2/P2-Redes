@@ -53,22 +53,20 @@ Clase* clase_init(int type)
 
 int introduce_player(int type) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
 {
-    // for (int i = 0; i < 5; i++){
-    //     if (active_players[i] != -1){active_players[i] = type;}
-    //     return 0;
-    // }
-    // return 1;
-    return 0;
+    for (int i = 0; i < 5; i++){
+        if (active_players[i] != NULL){active_players[i] = type;}
+        return 0;
+    }
+    return 1;
 }
 
 bool active_class(int type) //revisa si existe un jugador de clase type activo
 {
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     if (active_players[i] == type){return true;}
-    // }
-    // return false;
-    return true;
+    for (int i = 0; i < 5; i++)
+    {
+        if (active_players[i] == type){return true;}
+    }
+    return false;
 }
 
 // Clases

@@ -5,7 +5,7 @@
 
 struct clase;
 typedef struct clase Clase;
-// int active_players[5] = {-1, -1, -1, -1, -1};
+Clase** active_players[4] = {NULL, NULL, NULL, NULL};
 
 struct clase
 {
