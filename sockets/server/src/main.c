@@ -112,9 +112,38 @@ int main(int argc, char *argv[]){
     }
     if (msg_code == 5){
       //manejo funcion 2
+      char * objective = server_receive_payload(sockets_array[my_attention]);
+      int obj = atoi(objective);
+      int class = players[my_attention] -> type;
+      if (class == 0){
+        corte_cruzado(players[my_attention], players[obj]);
+      }
+
+      else if (class == 1){
+        //destello_regenerador(players[my_attention], players[obj]);
+      }
+
+      else if (class == 2){
+        ataque_ddos(players[my_attention], players[obj]);
+      }
+
     }
     if (msg_code == 6){
       //manejo funcion 3
+      char * objective = server_receive_payload(sockets_array[my_attention]);
+      int obj = atoi(objective);
+      int class = players[my_attention] -> type;
+      if (class == 0){
+        distraer(players[my_attention], players[obj]);
+      }
+
+      else if (class == 1){
+        descarga_vital(players[my_attention], players[obj]);
+      }
+
+      else if (class == 2){
+        fuerza_bruta(players[my_attention], players[obj]);
+      }
     }
     
     printf("------------------\n");

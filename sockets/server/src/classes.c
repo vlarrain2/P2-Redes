@@ -1,8 +1,24 @@
 #include "classes.h"
 
+int introduce_player(Clase* player) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
+{
+    for (int i = 0; i < 4; i++){
+        if (!active_players[i]){active_players[i] = player;}
+        return 0;
+    }
+    return 1;
+}
+
+int count_players()
+{
+    int n = 0;
+    for (int i = 0; i < 4; i++)
+    {if (active_players[i]){n += 1;}}
+    return n;
+}
+
 Clase* clase_init(int type)
 {
-    printf("TIPOOOOOO: %d\n", type);
     Clase* clase = malloc(sizeof(Clase));
     if (type == 0)
     {
@@ -45,32 +61,21 @@ Clase* clase_init(int type)
         clase -> initial_health = 25000;
         clase -> current_health = clase -> initial_health;
     }
-    introduce_player(type);
+    //clase -> name = name;
+    int aver = introduce_player(clase);
 
     return clase;
 }
 
 
-int introduce_player(int type) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
-{
-    // for (int i = 0; i < 5; i++){
-    //     if (active_players[i] != NULL){(*active_players[i])->type = type;}
-    //     return 0;
-    // }
-    // return 1;
-    return 0;
-}
-
 bool active_class(int type) //revisa si existe un jugador de clase type activo
 {
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     if ((*active_players[i])->type == type){return true;}
-    // }
-    // return false;
-    return true;
+    for (int i = 0; i < 4; i++)
+    {
+        if (active_players[i]->type == type){return true;}
+    }
+    return false;
 }
-
 // Clases
 
 void estocada(Clase* attacker, Clase* enemy)
@@ -113,6 +118,23 @@ void curar(Clase* attacker, Clase* friend)
     {
         friend -> current_health += 2000;
     }
+}
+
+void destello_regenerador_ruiz(Clase* attacker, Clase* enemy)
+{
+    int num = (rand() % (2000 - 750 + 1)) + 750;  // numero random
+    int regeneracion = (int)(num/2);  // redondeo hacia arriba
+    // no se puede tener más que la vida inicial
+    if ((attacker -> current_health + regeneracion) >= attacker->initial_health)
+    {
+        attacker -> current_health = attacker -> initial_health;
+    }
+    else
+    {
+        attacker -> current_health += regeneracion;
+    }
+
+    enemy -> current_health -= num;
 }
 
 void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Clase* enemy)
@@ -180,34 +202,40 @@ void fuerza_bruta(Clase* attacker, Clase* enemy)
 // Monstruos
 void ruzgar(Clase* attacker, Clase* enemy)
 {
-    enemy -> current_health -= 1000;
+    if (enemy -> reprobado){enemy -> current_health -= 1500;}
+    else {enemy -> current_health -= 1000;}
     if (enemy -> current_health <= 0)
     {
         printf("El jugador murió\n");
     }
 }
 
-void coletazo(Clase* attacker, Clase** enemies_array, int enemies_length)
+void coletazo(Clase* attacker)
 {
-    for (int i = 0; i < enemies_length; i++)
+    for (int i = 0; i < 4; i++)
     {
-        enemies_array[0]->current_health -= 500;
-        if (enemies_array[0]->current_health <= 0)
+        if (active_players[i] != NULL)
         {
-            printf("El jugador murió\n");
+            if (active_players[i] -> reprobado){active_players[i] -> current_health -= 750;}
+            else {active_players[i] -> current_health -= 500;}
+            if (active_players[i] -> current_health <= 0)
+            {
+                active_players[i] -> current_health = 0;
+                printf("El jugador murió\n");
+            }
         }
     }
 }
 
 void salto(Clase* attacker, Clase* enemy)
 {
-    if (attacker->last_action != 11)
+    if (enemy -> reprobado == 1){enemy->current_health -= 1.5 * 1500;}
+    else{enemy->current_health -= 1500;}
+    
+    if (enemy->current_health <= 0)
     {
-        enemy->current_health -= 1500;
-        if (enemy->current_health <= 0)
-        {
-            printf("El jugador murió\n");
-        }
+        enemy->current_health = 0;
+        printf("El jugador murió\n");
     }
 }
 
@@ -215,9 +243,11 @@ void espina_venenosa(Clase* attacker, Clase* enemy)
 {
     if (enemy->intoxicated)
     {
-        enemy->current_health -= 500;
+        if (enemy -> reprobado){enemy->current_health -= 750;}
+        else{enemy->current_health -= 500;}
         if (enemy->current_health <= 0)
         {
+            enemy -> current_health = 0;
             printf("El jugador murió\n");
         }
     }
@@ -229,7 +259,7 @@ void espina_venenosa(Clase* attacker, Clase* enemy)
     }
 }
 
-void copia(Clase* attacker, Clase* enemy, Clase** friends, int num_friends)
+void copia(Clase* attacker, Clase* enemy)
 {
     int classes[3] = {0, 0, 0};
     for (int i = 0; i < 3; i++)
@@ -250,7 +280,7 @@ void copia(Clase* attacker, Clase* enemy, Clase** friends, int num_friends)
         {
             int spell_dice = rand() % 3;
             if (spell_dice == 0){return curar(attacker, attacker);} //se tiene que healear a si mismo
-            else if (spell_dice == 1){return destello_regenerador(attacker, friends, num_friends, enemy);} // revisar como funciona destello_regenerador para hacer que el Ruz se healee a si mismo cuando copie esta habilidad
+            else if (spell_dice == 1){return destello_regenerador_ruiz(attacker, enemy);} // revisar como funciona destello_regenerador para hacer que el Ruz se healee a si mismo cuando copie esta habilidad
             else {return descarga_vital(attacker, enemy);}
         }
         else if (classes[dice] == 1 && dice == 3)
@@ -261,4 +291,84 @@ void copia(Clase* attacker, Clase* enemy, Clase** friends, int num_friends)
             else {return fuerza_bruta(attacker, enemy);}
         }
     }
+}
+
+void reprobatron(Clase* attacker, Clase* enemy)
+{
+    enemy -> reprobado = 1;
+}
+
+void sudo_rm_rf(Clase* attacker, Clase* enemy)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (active_players[i] != NULL)
+        {
+            if (active_players[i] -> reprobado == 1)
+            {
+                if(active_players[i] -> current_health >= 1.5 * 100 * rounds){enemy->current_health -= 1.5 * 100 * rounds;}
+                else{active_players[i] -> current_health = 0;}
+            }
+            else
+            {
+                if(active_players[i] -> current_health >= 100 * rounds){enemy->current_health -= 100 * rounds;}
+                else{active_players[i] -> current_health = 0;}
+            }
+        }
+    }
+    rounds = 0;
+}
+
+void great_jagruz_turn(Clase* attacker, Clase* enemy)
+{
+    int dice = rand() % 2;
+    if (dice == 0){ruzgar(attacker, enemy);}
+    else {coletazo(attacker);}
+}
+
+void ruzalos_turn(Clase* attacker, Clase* enemy)
+{
+    if (attacker -> jumped == 1)
+    {
+        espina_venenosa(attacker, enemy);
+        attacker -> jumped = 0;
+    }
+    else
+    {
+        int dice = rand() % 5;
+        if (dice < 2)
+        {
+            salto(attacker, enemy);
+            attacker -> jumped = 1;
+        }
+        else {espina_venenosa(attacker, enemy);}
+    }
+}
+
+void ruiz_turn(Clase* attacker, Clase* enemy)
+{
+    int dice = rand() % 5;
+    if (dice < 2){copia(attacker, enemy);}
+    else if (dice == 2){reprobatron(attacker, enemy);}
+    else{sudo_rm_rf(attacker, enemy);}
+}
+
+void game_statistics(Clase* enemy)
+{
+    //3: GreatJagRuz, 4: Ruzalos, 5: Ruiz
+    char** type;
+    type[0] = "Cazador";
+    type[1] = "Médico";
+    type[2] = "Hacker";
+    type[3] = "GreatJagRuz";
+    type[4] = "Ruzalos";
+    type[5] = "Ruiz";
+    printf("______ESTE ES EL ESTADO ACTUAL DEL JUEGO______:\n");
+    for (int i = 0; i < 4; i++)
+    {
+        if (active_players[i] != NULL)
+        {printf("%s : %s  -> VIDA ACTUAL = %f / %d [%f] \n", active_players[i]->name, type[active_players[i] -> type], active_players[i] -> current_health, active_players[i] -> initial_health, (active_players[i] -> current_health / active_players[i] -> initial_health));}
+    }
+    printf("%s  -> VIDA ACTUAL = %f / %d [%f]", type[enemy -> type], enemy -> current_health, enemy -> initial_health, (enemy -> current_health / enemy -> initial_health));
+    printf("_____________________________\n");
 }
