@@ -1,8 +1,30 @@
 #include "classes.h"
 
+// void set_active_players()
+// {
+//     active_players = calloc(0, sizeof(Clase*));
+// }
 
-Clase* clase_init(int type)
+int introduce_player(Clase* player) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
 {
+    for (int i = 0; i < 4; i++){
+        if (!active_players[i]){active_players[i] = player;}
+        return 0;
+    }
+    return 1;
+}
+
+int count_players()
+{
+    int n = 0;
+    for (int i = 0; i < 4; i++)
+    {if (active_players[i]){n += 1;}}
+    return n;
+}
+
+Clase* clase_init(int type, char* name)
+{
+
     Clase* clase = malloc(sizeof(Clase));
     if (type == 0)
     {
@@ -45,19 +67,12 @@ Clase* clase_init(int type)
         clase -> initial_health = 25000;
         clase -> current_health = clase -> initial_health;
     }
-    introduce_player(clase);
+    clase -> name = name;
+    int aver = introduce_player(clase);
     return clase;
 }
 
 
-int introduce_player(Clase* player) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
-{
-    for (int i = 0; i < 4; i++){
-        if (active_players[i] != NULL){active_players[i] = player;}
-        return 0;
-    }
-    return 1;
-}
 
 bool active_class(int type) //revisa si existe un jugador de clase type activo
 {
@@ -116,6 +131,23 @@ void curar(Clase* attacker, Clase* friend)
     {
         friend -> current_health += curacion;
     }
+}
+
+void destello_regenerador_ruiz(Clase* attacker, Clase* enemy)
+{
+    int num = (rand() % (2000 - 750 + 1)) + 750;  // numero random
+    int regeneracion = (int)(num/2);  // redondeo hacia arriba
+    // no se puede tener más que la vida inicial
+    if ((attacker -> current_health + regeneracion) >= attacker->initial_health)
+    {
+        attacker -> current_health = attacker -> initial_health;
+    }
+    else
+    {
+        attacker -> current_health += regeneracion;
+    }
+
+    enemy -> current_health -= num;
 }
 
 void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Clase* enemy)
@@ -252,7 +284,7 @@ void espina_venenosa(Clase* attacker, Clase* enemy)
 
 void copia(Clase* attacker, Clase* enemy)
 {
-    int classes = {0, 0, 0};
+    int classes[3] = {0, 0, 0};
     for (int i = 0; i < 3; i++)
     {
         if (active_class(i)){classes[i] = 1;}
@@ -271,7 +303,7 @@ void copia(Clase* attacker, Clase* enemy)
         {
             int spell_dice = rand() % 3;
             if (spell_dice == 0){return curar(attacker, attacker);} //se tiene que healear a si mismo
-            else if (spell_dice == 1){return destello_regenerador(attacker, enemy);} // revisar como funciona destello_regenerador para hacer que el Ruz se healee a si mismo cuando copie esta habilidad
+            else if (spell_dice == 1){return destello_regenerador_ruiz(attacker, enemy);} // revisar como funciona destello_regenerador para hacer que el Ruz se healee a si mismo cuando copie esta habilidad
             else {return descarga_vital(attacker, enemy);}
         }
         else if (classes[dice] == 1 && dice == 3)
@@ -289,7 +321,7 @@ void reprobatron(Clase* attacker, Clase* enemy)
     enemy -> reprobado = 1;
 }
 
-void sudo_rm_rf(Clase* attacker)
+void sudo_rm_rf(Clase* attacker, Clase* enemy)
 {
     for (int i = 0; i < 4; i++)
     {
@@ -298,12 +330,12 @@ void sudo_rm_rf(Clase* attacker)
             if (active_players[i] -> reprobado == 1)
             {
                 if(active_players[i] -> current_health >= 1.5 * 100 * rounds){enemy->current_health -= 1.5 * 100 * rounds;}
-                else{active_players[i] -> current_health = 0}
+                else{active_players[i] -> current_health = 0;}
             }
             else
             {
                 if(active_players[i] -> current_health >= 100 * rounds){enemy->current_health -= 100 * rounds;}
-                else{active_players[i] -> current_health = 0}
+                else{active_players[i] -> current_health = 0;}
             }
         }
     }
@@ -314,7 +346,7 @@ void great_jagruz_turn(Clase* attacker, Clase* enemy)
 {
     int dice = rand() % 2;
     if (dice == 0){ruzgar(attacker, enemy);}
-    else {coletazo(attacker, enemy);}
+    else {coletazo(attacker);}
 }
 
 void ruzalos_turn(Clase* attacker, Clase* enemy)
@@ -341,13 +373,13 @@ void ruiz_turn(Clase* attacker, Clase* enemy)
     int dice = rand() % 5;
     if (dice < 2){copia(attacker, enemy);}
     else if (dice == 2){reprobatron(attacker, enemy);}
-    else{sudo_rm_rf(attacker);}
+    else{sudo_rm_rf(attacker, enemy);}
 }
 
 void game_statistics(Clase* enemy)
 {
     //3: GreatJagRuz, 4: Ruzalos, 5: Ruiz
-    char** type[6];
+    char** type;
     type[0] = "Cazador";
     type[1] = "Médico";
     type[2] = "Hacker";
@@ -358,8 +390,8 @@ void game_statistics(Clase* enemy)
     for (int i = 0; i < 4; i++)
     {
         if (active_players[i] != NULL)
-        {printf("%s : %s  -> VIDA ACTUAL = %d / %d [%f] \n", active_players[i]->name, type[active_players[i] -> type], active_players[i] -> current_health, active_players[i] -> initial_health, (active_players[i] -> current_health / active_players[i] -> initial_health));}
+        {printf("%s : %s  -> VIDA ACTUAL = %f / %d [%f] \n", active_players[i]->name, type[active_players[i] -> type], active_players[i] -> current_health, active_players[i] -> initial_health, (active_players[i] -> current_health / active_players[i] -> initial_health));}
     }
-    printf("%s  -> VIDA ACTUAL = %d / %d [%f]", type[enemy -> type], enemy -> current_health, enemy -> initial_health, (enemy -> current_health / enemy -> initial_health));
+    printf("%s  -> VIDA ACTUAL = %f / %d [%f]", type[enemy -> type], enemy -> current_health, enemy -> initial_health, (enemy -> current_health / enemy -> initial_health));
     printf("_____________________________\n");
 }

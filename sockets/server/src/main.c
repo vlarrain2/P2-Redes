@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "comunication.h"
 #include "conection.h"
-#include "../../classes.h"
+#include "classes.h"
 
 char * revert(char * message){
   //Se invierte el mensaje
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
 
       server_send_message(sockets_array[my_attention], 2, client_message);
     }
-    printf("------------------\n");
+    //printf("------------------\n");
   }
 
   return 0;

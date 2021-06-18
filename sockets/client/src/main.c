@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "conection.h"
 #include "comunication.h"
-#include "../../classes.h"
 
 char * get_input(){
   char * response = malloc(20);
@@ -25,6 +24,7 @@ int main (int argc, char *argv[]){
 
   // Se prepara el socket
   int server_socket = prepare_socket(IP, PORT);
+  int iteration = 0;
 
   // Se inicializa un loop para recibir todo tipo de paquetes y tomar una acción al respecto
   while (1){
@@ -34,15 +34,22 @@ int main (int argc, char *argv[]){
       char * message = client_receive_payload(server_socket);
       printf("El servidor dice: %s\n", message);
       free(message);
-
-      printf("¿Qué desea hacer?\n   1)Enviar mensaje al servidor\n   2)Enviar mensaje al otro cliente\n");
+      if (iteration == 0)
+      {
+        printf("¿Desea jugar?\n [1] Sí\n");     
+        int option = getchar() - '0';
+        getchar(); //Para capturar el "enter" que queda en el buffer de entrada stdin
+        printf("Ingrese su nombre: ");
+        char * response = get_input();
+        client_send_message(server_socket, 1, response);
+        iteration += 1;
+      }
+      else
+      {
       int option = getchar() - '0';
       getchar(); //Para capturar el "enter" que queda en el buffer de entrada stdin
-
-      printf("Ingrese su mensaje: ");
-      char * response = get_input();
-
-      client_send_message(server_socket, option, response);
+      client_send_message(server_socket, 1, "");
+      }
     }
 
     if (msg_code == 2) { //Recibimos un mensaje que proviene del otro cliente
