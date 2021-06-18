@@ -95,6 +95,20 @@ int main(int argc, char *argv[]){
     //esto según el ataque que se elija.
     if (msg_code == 4){
       //manejo funcion 1
+      char * objective = server_receive_payload(sockets_array[my_attention]);
+      int obj = atoi(objective);
+      int class = players[my_attention] -> type;
+      if (class == 0){
+        estocada(players[my_attention], players[obj]);
+      }
+
+      else if (class == 1){
+        curar(players[my_attention], players[obj]);
+      }
+
+      else if (class == 2){
+        inyeccion_sql(players[my_attention], players[obj]);
+      }
     }
     if (msg_code == 5){
       //manejo funcion 2
