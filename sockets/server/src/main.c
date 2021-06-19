@@ -62,11 +62,12 @@ int main(int argc, char *argv[]){
     else if (msg_code == 2){ //El cliente le envía un mensaje al otro cliente
       char * client_message = server_receive_payload(sockets_array[my_attention]);
       players[my_attention] -> name = client_message;
-      printf("El cliente %d tiene clase %d y nombre %s", my_attention + 1, players[my_attention] -> type, players[my_attention] -> name);
+      printf("El cliente %d tiene clase %d y nombre %s\n", my_attention + 1, players[my_attention] -> type, players[my_attention] -> name);
       //printf("Cliente %d ingresado correctamente:\n    nombre: %s\n", my_attention + 1, client_message);
       printf("Servidor dando la bienvenida a jugador %d\n", my_attention+2);
       if (my_attention == 3){
         //mensaje para líder, para iniciar el juego
+        my_attention = 0;
         server_send_message(sockets_array[0], 3, "¿Quieres iniciar el juego?"); 
       }
       else{
@@ -77,7 +78,8 @@ int main(int argc, char *argv[]){
     }
     if (msg_code == 3){
       //manejo de rondas
-      char * message;
+      char * message = server_receive_payload(sockets_array[my_attention]);
+      printf("Cliente líder dice %s\n", message);
       if (players[my_attention]->type == 0){
         message = "¿Qué habilidad escoge?\n   1)Estocada\n   2)Corte Cruzado\n   3)Distraer\n";
       }
