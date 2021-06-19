@@ -87,7 +87,7 @@ int main(int argc, char *argv[]){
       else if (players[my_attention]->type == 2){
         message = "¿Qué habilidad escoge?\n   1)Inyección SQL\n   2)Ataque DDOS\n   3)Fuerza Bruta\n";
       }
-      server_send_message(sockets_array[my_attention], 1, message);
+      server_send_message(sockets_array[my_attention], 4, message);
       //my_attention = (my_attention + 1) % 4;
 
     }
@@ -109,6 +109,8 @@ int main(int argc, char *argv[]){
       else if (class == 2){
         inyeccion_sql(players[my_attention], players[obj]);
       }
+      my_attention = (my_attention + 1) % 4;
+      server_send_message(sockets_array[my_attention], 5, "hola");
     }
     if (msg_code == 5){
       //manejo funcion 2
@@ -126,6 +128,8 @@ int main(int argc, char *argv[]){
       else if (class == 2){
         ataque_ddos(players[my_attention], players[obj]);
       }
+      my_attention = (my_attention + 1) % 4;
+      server_send_message(sockets_array[my_attention], 5, "hola");
 
     }
     if (msg_code == 6){
@@ -144,6 +148,8 @@ int main(int argc, char *argv[]){
       else if (class == 2){
         fuerza_bruta(players[my_attention], players[obj]);
       }
+      my_attention = (my_attention + 1) % 4;
+      server_send_message(sockets_array[my_attention], 5, "hola");
     }
     
     printf("------------------\n");
