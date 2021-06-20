@@ -5,13 +5,13 @@
 //     active_players = calloc(0, sizeof(Clase*));
 // }
 
-int introduce_player(Clase* player) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
+void introduce_player(Clase* player) //pobla la cantidad de jugadores activos cuando se crean, retorna 1 si no hay espacio
 {
     for (int i = 0; i < 4; i++){
-        if (!active_players[i]){active_players[i] = player;}
-        return 0;
+        if (active_players[i] == NULL){active_players[i] = player;}
+        return;
     }
-    return 1;
+    return;
 }
 
 int count_players()
@@ -68,7 +68,6 @@ Clase* clase_init(int type, char* name)
         clase -> current_health = clase -> initial_health;
     }
     clase -> name = name;
-    int aver = introduce_player(clase);
     return clase;
 }
 

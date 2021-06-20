@@ -67,10 +67,15 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
     puts("Waiting for connections ...");
     int n_jugador = 0;
     int launch_game = 0;
+    int cant_jugadores = -1;
+    char* names[4] = {NULL, NULL, NULL, NULL};
+    int types[4] = {0, 0, 0, 0};
+    bool mostro_electo = false;
     //set_active_players();
          
     while(1)  
     {
+
         if (launch_game == 1)
         {
             if (active_players[0]){sockets_clients -> socket_c1 = client_socket[0];}
@@ -104,12 +109,12 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
      
         //wait for an activity on one of the sockets , timeout is NULL , 
         //so wait indefinitely 
-        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL); 
+        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
        
-        if ((activity < 0) && (errno!=EINTR))  
-        {  
-            printf("select error");  
-        } 
+        if ((activity < 0) && (errno!=EINTR))
+        {
+            printf("select error");
+        }
              
         //If something happened on the master socket , 
         //then its an incoming connection 
@@ -126,33 +131,10 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
            
             //send new connection greeting message 
 
-            while (1)
-            {
-              n_jugador += 1;
-              message = "Bienvenido a Monster Hunter: Ruiz\n";
-              server_send_message(new_socket, 1, message);
-              id_received = server_receive_id(new_socket); //Recibe nombre del jugador
-              if (id_received == 1)
-              {
-                char * name = server_receive_payload(new_socket);
-                printf("-------------------\n");
-                message = "Elige la clase que quieres ocupar\n[1] Cazador\n[2] Médico\n[3] Hacker\n";
-                server_send_message(new_socket, 1, message);
-                int type = server_receive_id(new_socket);
-                if ( type == 1){printf("JUGADOR %d: %s => Cazador\n", n_jugador, name);}
-                else if ( type == 2){printf("JUGADOR %d: %s => Médico\n", n_jugador, name);}
-                else{printf("JUGADOR %d: %s => Hacker\n", n_jugador, name);}
-                Clase* jugador = clase_init(type, name);
-                if (new_socket == 4)
-                {
-                    jugador -> lider = TRUE;
-                    printf("%s es el líder de la party\n", name);
-                    message = "[1] para iniciar la partida\n";
-                    server_send_message(new_socket, 1, message);
-                }
-                break;
-              }
-            }
+            n_jugador += 1;
+            message = "Bienvenido a Monster Hunter: Ruiz\n ¿Cuál es tu nombre?\n";
+            server_send_message(new_socket, 1, message);
+
 
                  
             //add new socket to array of sockets 
@@ -163,7 +145,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                 {  
                     client_socket[i] = new_socket;  
                     printf("Adding to list of sockets as %d\n" , i);  
-                    break;  
+                    break;
                 }  
             }  
         }  
@@ -175,17 +157,11 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
 
             if (FD_ISSET( sd , &readfds))  
             {  
-                if (i == 0)
-                {
-                    if (server_receive_id(client_socket[i]) == 1)
-                    {
-                        if (n_jugador == count_players())
-                        {launch_game = 1;printf("PARTIDA INICIADA");}
-                    }
-                }
+                id_received = server_receive_id(sd); //Recibe tipo de mensaje
+                char * payload_received = server_receive_payload(sd);
                 //Check if it was for closing , and also read the 
                 //incoming message 
-                if ((valread = read( sd , buffer, 1024)) == 0)  
+                if (id_received == 0)  
                 {  
                     //Somebody disconnected , get his details and print 
                     getpeername(sd , (struct sockaddr*)&address , \
@@ -195,16 +171,110 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                     //Close the socket and mark as 0 in list for reuse 
                     close( sd );  
                     client_socket[i] = 0;  
-                }  
-                     
-                //Echo back the message that came in 
-                else 
-                {  
-                    //set the string terminating NULL byte on the end 
-                    //of the data read 
-                    buffer[valread] = '\0';  
-                    send(sd , buffer , strlen(buffer) , 0 );  
                 }
+                else if (!names[i])
+                {
+                    message = "Elige la clase que quieres ocupar\n[0] Cazador\n[1] Médico\n[2] Hacker\n";
+                    server_send_message(sd, 1, message);
+                    names[i] = payload_received;
+                }
+                else if (!types[i])
+                {
+                    int type = atoi(payload_received); //cambiar
+                    if ( type == 0)
+                    {
+                        printf("JUGADOR %d: (%s) => Cazador\n", n_jugador, names[i]);types[i] = type;
+                        Clase* jugador = clase_init(types[i], names[i]);
+                        active_players[i] = jugador;
+                        printf("EXISTE %s\n", active_players[i] -> name);
+                    }
+                    else if ( type == 1)
+                    {
+                        printf("JUGADOR %d: (%s) => Médico\n", n_jugador, names[i]);
+                        types[i] = type;
+                        Clase* jugador = clase_init(types[i], names[i]);
+                        active_players[i] = jugador;
+                        printf("EXISTE %s\n", active_players[i] -> name);
+                    }
+                    else if ( type == 2)
+                    {
+                        printf("JUGADOR %d (%s) => Hacker\n", n_jugador, names[i]);
+                        types[i] = type;
+                        Clase* jugador = clase_init(types[i], names[i]);
+                        active_players[i] = jugador;
+                        printf("EXISTE %s\n", active_players[i] -> name);
+                    }
+                    else{message = "Elección inválida. \nElige la clase que quieres ocupar\n[0] Cazador\n[1] Médico\n[2] Hacker\n";server_send_message(sd, 0, message);}
+                    if ((type == 0) || (type == 1) || (type == 2))
+                    {
+                        if (i == 0){
+                            message = "Elige el monstruo contra el que quieres combatir\n[3] Great JagRuz\n[4] Ruzalos\n[5] Ruiz, el Gemelo Malvado del Profesor Ruz\n";
+                            server_send_message(sd, 1, message);
+                            printf("%s es el líder de la party\n", names[i]);
+                        }
+                        else{
+                            message = "Espera a que el líder elija un MOSTRO e inicie la partida.\n";
+                            server_send_message(sd, 1, message);
+                        }
+                    }
+                }
+                else if ((i == 0) && (!mostro_electo))
+                {
+                    int mostro = atoi(payload_received);
+                    if ( mostro == 3){printf("VAN A PELEAR CONTRA GREAT JAGRUZ\n");mostro_electo = true; enemy = clase_init(mostro, "MOSTRO");}
+                    else if ( mostro == 4){printf("VAN A PELEAR CONTRA RUZALOS\n");mostro_electo = true; enemy = clase_init(mostro, "MOSTRO");}
+                    else if ( mostro == 5){printf("VAN A PELEAR CONTRA RUIZ, EL GEMELO MALVADO DEL PROFESOR RUZ\n");mostro_electo = true; enemy = clase_init(mostro, "MOSTRO");}
+                    else{message = "Elección inválida. \nElige el monstruo contra el que quieres combatir\n[3] Great JagRuz\n[4] Ruzalos\n[5] Ruiz, el Gemelo Malvado del Profesor Ruz\n";server_send_message(sd, 0, message);}
+                    if ((mostro == 3) || (mostro == 4) || (mostro == 5))
+                    {
+                        if (i == 0){
+                            message = "SI ESTÁN TODOS LOS JUGADORES LISTOS, PRESIONA CUALQUIER TECLA PARA INICIAR LA PARTIDA\n";
+                            server_send_message(sd, 1, message);
+                        }
+                        else{
+                            message = "Espera a que el líder elija un MOSTRO e inicie la partida.\n";
+                            server_send_message(sd, 1, message);
+                        }
+                    }
+                }
+                else if (i == 0)
+                {
+                    printf("cant_jugadores = %d     /     count_players() = %d\n", n_jugador, count_players());
+                    if (n_jugador == count_players())
+                    {
+                        launch_game = 1;
+                    }
+                    else
+                    {
+                        message = "ASEGÚRATE DE QUE ESTÉN TODOS LISTOS E INTÉNTALO NUEVAMENTE\n";
+                        server_send_message(sd, 2, message);
+                    }
+                }
+                // int type = server_receive_id(new_socket);
+                // if ( type == 1){printf("JUGADOR %d: %s => Cazador\n", n_jugador, payload_received);}
+                // else if ( type == 2){printf("JUGADOR %d: %s => Médico\n", n_jugador, payload_received);}
+                // else{printf("JUGADOR %d: %s => Hacker\n", n_jugador, payload_received);}
+                // Clase* jugador = clase_init(type, payload_received);
+                // if (new_socket == 4)
+                // {
+                //     jugador -> lider = TRUE;
+                //     printf("%s es el líder de la party\n", payload_received);
+                //     server_send_message(new_socket, 1, message);
+                //     cant_jugadores = server_receive_id(new_socket);
+                // }
+
+
+                // if ((cant_jugadores == count_players()) && (i == 0))
+                // {
+                //     printf("cant_jugadores = %d     /     count_players() = %d\n", cant_jugadores, count_players());
+                //     message = "Todos los jugadores listos, [1] para iniciar partida\n";
+                //     server_send_message(client_socket[i], 1, message);
+                //     if (server_receive_id(client_socket[i]) == 1)
+                //     {
+                //         if (n_jugador == count_players())
+                //         {launch_game = 1;printf("PARTIDA INICIADA");}
+                //     }
+                // }
 
             }  
         }  
