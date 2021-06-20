@@ -12,15 +12,31 @@ int num_of_players = 0;
 char * habilities(int type){
   char * message;
   if (type == 0){
-    message = "¿Qué habilidad escoge?\n   1)Estocada\n   2)Corte Cruzado\n   3)Distraer\n";
+    message = "¿Qué habilidad escoge?\n   1)Estocada\n   2)Corte Cruzado\n   3)Distraer\n   4)Me rindo :(\n";
   }
   else if (type == 1){
-    message = "¿Qué habilidad escoge?\n   1)Curar\n   2)Destello regenerador\n   3)Descarga vital\n";
+    message = "¿Qué habilidad escoge?\n   1)Curar\n   2)Destello regenerador\n   3)Descarga vital\n   4)Me rindo (~Hello World):(\n";
   }
   else if (type == 2){
-    message = "¿Qué habilidad escoge?\n   1)Inyección SQL\n   2)Ataque DDOS\n   3)Fuerza Bruta\n";
+    message = "¿Qué habilidad escoge?\n   1)Inyección SQL\n   2)Ataque DDOS\n   3)Fuerza Bruta\n   4)Me rindo :(\n";
   }
   return message;
+}
+
+void die(int my_attention, int* sockets_array)
+{
+  for (int i = my_attention; i < (num_of_players - 1); i++)
+  {
+    players[i] = players[i + 1];
+    active_players[i] = active_players[i + 1];
+  }
+  for (int i = my_attention; i < (num_of_players - 2); i++)
+  {
+    sockets_array[i] = sockets_array[i + 1];
+  }
+  players[num_of_players - 1] = NULL;
+  active_players[num_of_players - 1] = NULL;
+  num_of_players--;
 }
 
 int main(int argc, char *argv[]){
@@ -48,7 +64,7 @@ int main(int argc, char *argv[]){
       char* client_class = server_receive_payload(sockets_array[my_attention]);
       int class = atoi(client_class);
       class --;
-      players[my_attention] = clase_init(class);
+      players[my_attention] = clase_init(class, my_attention);
       num_of_players++;
       printf("El cliente %d es de clase %d", my_attention + 1, players[my_attention]->type);
       
@@ -80,13 +96,13 @@ int main(int argc, char *argv[]){
 
       int monster = atoi(message);
       if (monster != 4){
-        players[4] = clase_init(monster + 2);
+        players[num_of_players] = clase_init(monster + 2, num_of_players);
         num_of_players++;
       }
       else{
         //monstruo aleatorio
         int num = (rand() % (5 - 3 + 1)) + 3;  // se elige un random entre 3 y 5
-        players[4] = clase_init(num);
+        players[num_of_players] = clase_init(num, num_of_players);
         num_of_players++;
       }
 
@@ -98,14 +114,27 @@ int main(int argc, char *argv[]){
     {
       char* habilidad = server_receive_payload(sockets_array[my_attention]);
       players[my_attention] -> habilidad = atoi(habilidad);
-      char message[1024] = "";
-      char player[1024] = "";
-      for (int i = 0; i < num_of_players; i++)
+      if (players[my_attention] -> habilidad == 4){
+        server_send_message(sockets_array[my_attention], 8, "Te rendiste perdedor\n");
+        die(my_attention, sockets_array);
+        if (num_of_players == 1)
+        {
+          printf("Ganó %s\n", players[0] -> name);
+          break;
+        }
+        char * hability_msg = habilities(players[my_attention]->type);
+        server_send_message(sockets_array[my_attention], 4, hability_msg);
+      } else
       {
-        sprintf(player, "%d) %s\n", i + 1, players[i] -> name);
-        strcat(message, player);
+        char message[1024] = "";
+        char player[1024] = "";
+        for (int i = 0; i < num_of_players; i++)
+        {
+          sprintf(player, "%d) %s\n", i + 1, players[i] -> name);
+          strcat(message, player);
+        }
+        server_send_message(sockets_array[my_attention], 6, message);
       }
-      server_send_message(sockets_array[my_attention], 6, message);
     }
 
     if (msg_code == 5)
@@ -118,11 +147,13 @@ int main(int argc, char *argv[]){
       printf("Habilidad de %s: %d\n", players[my_attention] -> name, players[my_attention] -> habilidad);
 
       printf("______ESTE ES EL ESTADO ACTUAL DEL JUEGO______:\n");
-      for (int i = 0; i < 5; i++)
+      for (int i = 0; i < num_of_players; i++)
       {
         printf("%s : %d  -> VIDA ACTUAL = %f / %d [%f] \n", players[i]->name, players[i] -> type, players[i] -> current_health, players[i] -> initial_health, (players[i] -> current_health / players[i] -> initial_health));
       }
       printf("_____________________________\n");
+
+      printf("%s atacando a %s\n", players[my_attention] -> name, players[obj] -> name);
 
       if (players[my_attention] -> habilidad == 1){
         //manejo funcion 1
@@ -166,31 +197,92 @@ int main(int argc, char *argv[]){
           fuerza_bruta(players[my_attention], players[obj]);
         }
       }
-      my_attention = (my_attention + 1) % 4;
 
+      printf("antes del id\n");
+      int current_player_id = players[my_attention] -> id;
+      printf("id: %d\n", current_player_id);
+      int* dead;
+      int j = 0;
+      printf("antes del verdadero primer for\n");
+      for (int i = 0; i < num_of_players; i++)
+      {
+        if (players[i] -> current_health <= 0)
+        {
+          dead[j] = i;
+          j++;
+        }
+      }
+      printf("antes del primer for\n");
+      for (int i = 0; i < j; i++)
+      {
+        die(i, sockets_array);
+      }
+      printf("despues del primer for\n");
+      if (num_of_players == 1)
+      {
+        printf("Ganó %s\n", players[0] -> name);
+        break;
+      }
+      printf("antes del if\n");
+      if (players[num_of_players - 1] -> type < 3)
+      {
+        //si el ultimo jugador no es de tipo monstruo, entonces el monstruo murió y se acaba el juego
+        printf("Muerte del monstruo, fin del juego\n");
+        break;
+      }
+      printf("despues del if\n");
+
+      for (int i = 0; i < num_of_players; i++)
+      {
+        if (players[i] -> id == current_player_id)
+        {
+          my_attention = i;
+        }
+      }
+
+      printf("actualice my attention\n");
+
+      my_attention = (my_attention + 1) % (num_of_players - 1);
+
+      printf("ahora si actualice my attention\n");
+  
       if (my_attention == 0)
       { 
         //antes de volver al jugador 1, el monstruo debe jugar
-        int mons_obj = (rand()%4); //elige uno de los 4 jugadores
-        int mons_class = players[4]->type;
+        int mons_obj = (rand()%(num_of_players - 1)); //elige uno de los 4 jugadores
+        int mons_class = players[num_of_players - 1]->type;
+        printf("clase del monstruo: %d\n", mons_class);
         printf("Monstruo atacando a %s\n", players[mons_obj] -> name);
 
         if (mons_class == 3)
         {
-          great_jagruz_turn(players[5], players[mons_obj]);
+          printf("jagruz\n");
+          great_jagruz_turn(players[num_of_players], players[mons_obj]);
+          printf("jagruz_end\n");
         }
         else if (mons_class == 4)
         {
-          ruzalos_turn(players[5], players[mons_obj]);
+          printf("ruzalos\n");
+          ruzalos_turn(players[num_of_players], players[mons_obj]);
+          printf("ruzalos end\n");
         }
         else if (mons_class == 5)
         {
-          ruiz_turn(players[5], players[mons_obj]);
+          printf("ruiz\n");
+          ruiz_turn(players[num_of_players], players[mons_obj]);
+          printf("ruiz end\n");
         }
+        printf("Usuario atacado\n");
 
       }
-
-
+      
+      
+      if (num_of_players == 1)
+      {
+        printf("Ganó %s\n", players[0] -> name);
+        break;
+      }
+      
       char * hability_msg = habilities(players[my_attention]->type);
       server_send_message(sockets_array[my_attention], 4, hability_msg);
     }
@@ -214,7 +306,6 @@ int main(int argc, char *argv[]){
         server_send_message(sockets_array[my_attention], 7, monsters);
       }
     }
-
     
     printf("------------------\n");
   }

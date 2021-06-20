@@ -10,6 +10,7 @@ Clase* active_players[4];
 
 struct clase
 {
+    int id;
     char* name; //nombre de usuario
     int type;  // 0: Cazador, 1: Médico, 2: Hacker, 3: GreatJagRuz, 4: Ruzalos, 5: Ruiz
     int initial_health;
@@ -34,7 +35,7 @@ struct clase
 int count_players();
 void set_active_players();
 int introduce_player(Clase* player);
-Clase* clase_init(int type);
+Clase* clase_init(int type, int id);
 
 //jugadores
 void estocada(Clase* attacker, Clase* enemy);
@@ -59,5 +60,7 @@ void reprobatron(Clase* attacker, Clase* enemy);
 void sudo_rm_rf(Clase* attacker, Clase* enemy);
 void reprobatron(Clase* attacker, Clase* enemy);
 bool active_class(int type);
-void game_statistics();
-void cazador_turn(Clase* cazador);
+void game_statistics(Clase* enemy);
+void great_jagruz_turn(Clase* attacker, Clase* enemy);
+void ruzalos_turn(Clase* attacker, Clase* enemy);
+void ruiz_turn(Clase* attacker, Clase* enemy);

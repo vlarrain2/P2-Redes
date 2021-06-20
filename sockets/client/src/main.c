@@ -102,13 +102,23 @@ int main (int argc, char *argv[]){
       char* monster = get_input();
       client_send_message(server_socket, 3, monster);
     }
+
+    if (msg_code == 8)
+    {
+      char * message = client_receive_payload(server_socket);
+      printf("########################\n");
+      printf("%s", message);
+      printf("########################\n");
+      free(message);
+      break;
+    }
     printf("------------------\n");
   }
 
 
   // Se cierra el socket
   close(server_socket);
-  free(IP);
+  //free(IP);
 
   return 0;
 }

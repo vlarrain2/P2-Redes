@@ -17,9 +17,10 @@ int count_players()
     return n;
 }
 
-Clase* clase_init(int type)
+Clase* clase_init(int type, int id)
 {
     Clase* clase = malloc(sizeof(Clase));
+    clase -> id = id;
     if (type == 0)
     {
         clase -> type = type;
@@ -64,6 +65,16 @@ Clase* clase_init(int type)
         clase -> current_health = clase -> initial_health;
         clase -> name = "Ruiz, el Gemelo Malvado del Profesor Ruz";
     }
+    clase -> bleeding = 0; //puede ser de 0 a 3
+    clase -> intoxicated = 0;  // 0: no, 1: si
+    clase -> rounds_intoxicated = 0;
+    clase -> fuerza_bruta = 0; //cuando llega a 3 hace daño
+    clase -> duplicated_attack = 0; // 0: no, 1: si
+    clase -> rounds_duplicated = 0; // cuando llega a 2 duplicated_attack se vuekve a 0
+    clase -> jumped = 0; // 0: no ha usado la habilidad "salto", 1: ya uso la habilidad "salto"
+    clase -> distracted = 0; // 0: no, 1: si
+    clase -> reprobado = 0;// 0: normal, 1: reprobado
+    clase -> lider = 0;
     //clase -> name = name;
     int aver = introduce_player(clase);
 
@@ -86,7 +97,7 @@ void estocada(Clase* attacker, Clase* enemy)
     enemy -> current_health -= 1000;
     if (enemy->current_health <= 0)
     {
-        printf("El jugador murió\n");
+        printf("El jugador %s murió\n", enemy -> name);
     }
     if (enemy -> bleeding < 3) {
         enemy -> bleeding++;
@@ -98,7 +109,7 @@ void corte_cruzado(Clase* attacker, Clase* enemy)
     enemy -> current_health -= 3000;
     if (enemy->current_health <= 0)
     {
-        printf("El jugador murió\n");
+        printf("El jugador %s murió\n", enemy -> name);
     }
 }
 
@@ -138,6 +149,10 @@ void destello_regenerador_ruiz(Clase* attacker, Clase* enemy)
     }
 
     enemy -> current_health -= num;
+    if (enemy->current_health <= 0)
+    {
+        printf("El jugador %s murió\n", enemy -> name);
+    }
 }
 
 void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Clase* enemy)
@@ -158,6 +173,10 @@ void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Cla
     }
 
     enemy -> current_health -= num;
+    if (enemy->current_health <= 0)
+    {
+        printf("El jugador %s murió\n", enemy -> name);
+    }
 }
 
 void descarga_vital(Clase* attacker, Clase* enemy)
@@ -166,7 +185,7 @@ void descarga_vital(Clase* attacker, Clase* enemy)
     enemy -> current_health -= dano;
     if (enemy->current_health <= 0)
     {
-        printf("El jugador murió\n");
+        printf("El jugador %s murió\n", enemy -> name);
     }
 }
 
@@ -182,7 +201,7 @@ void ataque_ddos(Clase* attacker, Clase* enemy)
     enemy -> current_health -= 1500;
     if (enemy->current_health <= 0)
     {
-        printf("El jugador murió\n");
+        printf("El jugador %s murió\n", enemy -> name);
     }
 }
 
@@ -195,7 +214,8 @@ void fuerza_bruta(Clase* attacker, Clase* enemy)
         enemy->current_health -= 10000;
         if (enemy->current_health <= 0)
         {
-            printf("El jugador murió\n");
+            enemy->current_health = 0;
+            printf("El jugador %s murió\n", enemy -> name);
         }
         attacker -> fuerza_bruta = 0;
     }
@@ -207,9 +227,10 @@ void ruzgar(Clase* attacker, Clase* enemy)
 {
     if (enemy -> reprobado){enemy -> current_health -= 1500;}
     else {enemy -> current_health -= 1000;}
-    if (enemy -> current_health <= 0)
+    if (enemy->current_health <= 0)
     {
-        printf("El jugador murió\n");
+        enemy->current_health = 0;
+        printf("El jugador %s murió\n", enemy -> name);
     }
 }
 
@@ -224,7 +245,7 @@ void coletazo(Clase* attacker)
             if (active_players[i] -> current_health <= 0)
             {
                 active_players[i] -> current_health = 0;
-                printf("El jugador murió\n");
+                printf("El jugador %s murió\n", active_players[i] -> name);
             }
         }
     }
@@ -238,7 +259,7 @@ void salto(Clase* attacker, Clase* enemy)
     if (enemy->current_health <= 0)
     {
         enemy->current_health = 0;
-        printf("El jugador murió\n");
+        printf("El jugador %s murió\n", enemy->name);
     }
 }
 
@@ -251,7 +272,7 @@ void espina_venenosa(Clase* attacker, Clase* enemy)
         if (enemy->current_health <= 0)
         {
             enemy -> current_health = 0;
-            printf("El jugador murió\n");
+            printf("El jugador %s murió\n", enemy->name);
         }
     }
     else
