@@ -198,12 +198,9 @@ int main(int argc, char *argv[]){
         }
       }
 
-      printf("antes del id\n");
       int current_player_id = players[my_attention] -> id;
-      printf("id: %d\n", current_player_id);
-      int* dead;
+      int dead[5];
       int j = 0;
-      printf("antes del verdadero primer for\n");
       for (int i = 0; i < num_of_players; i++)
       {
         if (players[i] -> current_health <= 0)
@@ -212,25 +209,25 @@ int main(int argc, char *argv[]){
           j++;
         }
       }
-      printf("antes del primer for\n");
       for (int i = 0; i < j; i++)
       {
-        die(i, sockets_array);
+        if (players[dead[i]] -> type < 3)
+        {
+          server_send_message(sockets_array[dead[i]], 8, "Moriste\n");
+        }
+        die(dead[i], sockets_array);
       }
-      printf("despues del primer for\n");
       if (num_of_players == 1)
       {
         printf("Ganó %s\n", players[0] -> name);
         break;
       }
-      printf("antes del if\n");
       if (players[num_of_players - 1] -> type < 3)
       {
         //si el ultimo jugador no es de tipo monstruo, entonces el monstruo murió y se acaba el juego
         printf("Muerte del monstruo, fin del juego\n");
         break;
       }
-      printf("despues del if\n");
 
       for (int i = 0; i < num_of_players; i++)
       {
@@ -240,11 +237,9 @@ int main(int argc, char *argv[]){
         }
       }
 
-      printf("actualice my attention\n");
 
       my_attention = (my_attention + 1) % (num_of_players - 1);
 
-      printf("ahora si actualice my attention\n");
   
       if (my_attention == 0)
       { 
