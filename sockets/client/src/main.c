@@ -55,11 +55,10 @@ int main (int argc, char *argv[]){
       char * message = client_receive_payload(server_socket);
       printf("El servidor dice que soy de clase: %s\n", message);
       free(message);
-      char* name;
-      printf("Ingrese nombre de usuario:");
-      name = get_input();
-      client_send_message(server_socket, 2, name);
 
+      printf("Ingrese nombre de usuario:");
+      char* name = get_input();
+      client_send_message(server_socket, 2, name);
     }
 
     if (msg_code == 3) { //Mensaje lider para iniciar el juego
@@ -78,14 +77,16 @@ int main (int argc, char *argv[]){
       printf("%s\n", message);
       printf("########################\n");
       free(message);
-      int option = getchar() - '0'; //Para capturar el "enter" que queda en el buffer de entrada stdin
+
+      int option = getchar() - '0'; //habilidad escogida
       getchar();
 
       printf("Ingrese objetivo:\n");
       char* objective = get_input();
-      client_send_message(server_socket, option + 3, objective);//confirmación inicio de juego
-
+      client_send_message(server_socket, option + 3, objective);
+      //dependiendo de la habilidad va a distintas condiciones
     }
+    
     if (msg_code == 5){
       client_send_message(server_socket, 3, "hola");
     }

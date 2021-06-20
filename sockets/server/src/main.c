@@ -7,19 +7,9 @@
 
 Clase* players[4];
 
-char * revert(char * message){
-  //Se invierte el mensaje
+// char * revert(char * message){
+//   //Se invierte el mensaje
 
-  int len = strlen(message) + 1;
-  char * response = malloc(len);
-
-  for (int i = 0; i < len-1; i++)
-  {
-    response[i] = message[len-2-i];
-  }
-  response[len-1] = '\0';
-  return response;
-}
 
 int main(int argc, char *argv[]){
   // Se define una IP y un puerto
@@ -52,24 +42,21 @@ int main(int argc, char *argv[]){
       // Le enviamos la respuesta
       server_send_message(sockets_array[my_attention], 2, client_class);
     }
-    // else if (msg_code ==2) //El cliente me envió un mensaje a mi (servidor)
-    // {
-    //   char* name = server_receive_payload(sockets_array[my_attention]);
-    //   players[my_attention] -> name = name;
-    //   printf("El cliente %d tiene clase %d y nombre %s", my_attention + 1, players[my_attention] -> type, players[my_attention] -> name);
-    //   server_send_message(sockets_array[my_attention], 2, name);
-    // }
-    else if (msg_code == 2){ //El cliente le envía un mensaje al otro cliente
-      char * client_message = server_receive_payload(sockets_array[my_attention]);
-      players[my_attention] -> name = client_message;
+    
+    
+    if (msg_code == 2){ //El cliente eligió su nombre
+      char * client_name = server_receive_payload(sockets_array[my_attention]);
+      players[my_attention] -> name = client_name;
+  
       printf("El cliente %d tiene clase %d y nombre %s\n", my_attention + 1, players[my_attention] -> type, players[my_attention] -> name);
-      //printf("Cliente %d ingresado correctamente:\n    nombre: %s\n", my_attention + 1, client_message);
       printf("Servidor dando la bienvenida a jugador %d\n", my_attention+2);
+
       if (my_attention == 3){
-        //mensaje para líder, para iniciar el juego
+        //Si ya ingresó el 4to cliente, se envía mensaje para líder, para iniciar el juego
         my_attention = 0;
         server_send_message(sockets_array[0], 3, "¿Quieres iniciar el juego?"); 
       }
+
       else{
         // Mi atención cambia al otro socket
         my_attention++;
@@ -80,6 +67,16 @@ int main(int argc, char *argv[]){
       //manejo de rondas
       char * message = server_receive_payload(sockets_array[my_attention]);
       printf("Cliente líder dice %s\n", message);
+
+      // imprimiendo estadisticas
+      printf("______ESTE ES EL ESTADO ACTUAL DEL JUEGO______:\n");
+      for (int i = 0; i < 4; i++)
+      {
+        printf("%s : %d  -> VIDA ACTUAL = %f / %d [%f] \n", players[i]->name, players[i] -> type, players[i] -> current_health, players[i] -> initial_health, (players[i] -> current_health / players[i] -> initial_health));
+      }
+      printf("________________________________________\n");
+
+      // mensaje personalizado segun clase
       if (players[my_attention]->type == 0){
         message = "¿Qué habilidad escoge?\n   1)Estocada\n   2)Corte Cruzado\n   3)Distraer\n";
       }
