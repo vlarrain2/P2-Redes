@@ -115,12 +115,12 @@ void curar(Clase* attacker, Clase* friend)
 
 void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Clase* enemy)
 {
-    int num = (rand() % (2000 - 750 + 1)) + 750; //numero random
-    int regeneracion = (int)(num/2); // redondeo hacia arriba
+    int num = (rand() % (2000 - 750 + 1)) + 750;  // numero random
+    int regeneracion = (int)(num/2);  // redondeo hacia arriba
     
     int num_friend = rand() % (num_friends + 1);
     Clase* friend = friends[num_friend];
-    //no se puede tener más que la vida inicial
+    // no se puede tener más que la vida inicial
     if ((friend -> current_health + regeneracion) >= friend->initial_health)
     {
         friend -> current_health = friend -> initial_health;
@@ -132,6 +132,26 @@ void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Cla
 
     enemy -> current_health -= num;
 }
+
+void destello_regenerador_ruiz(Clase* attacker, Clase* enemy)
+{
+    int num = (rand() % (2000 - 750 + 1)) + 750;  // numero random
+    int regeneracion = (int)(num/2);  // redondeo hacia arriba
+    // no se puede tener más que la vida inicial
+    if ((attacker -> current_health + regeneracion) >= attacker->initial_health)
+    {
+        attacker -> current_health = attacker -> initial_health;
+    }
+    else
+    {
+        attacker -> current_health += regeneracion;
+    }
+
+    enemy -> current_health -= num;
+}
+
+
+
 
 void descarga_vital(Clase* attacker, Clase* enemy)
 {
@@ -229,7 +249,10 @@ void espina_venenosa(Clase* attacker, Clase* enemy)
 
 void copia(Clase* attacker, Clase* enemy)
 {
-    int classes = [0, 0, 0];
+    int classes[3];
+    classes[0] = 0;
+    classes[1] = 0;
+    classes[2] = 0;
     for (int i = 0; i < 3; i++)
     {
         if (active_class(i)){classes[i] = 1;}
@@ -248,7 +271,7 @@ void copia(Clase* attacker, Clase* enemy)
         {
             int spell_dice = rand() % 3;
             if (spell_dice == 0){return curar(attacker, attacker);} //se tiene que healear a si mismo
-            else if (spell_dice == 1){return destello_regenerador(attacker, enemy);} // revisar como funciona destello_regenerador para hacer que el Ruz se healee a si mismo cuando copie esta habilidad
+            else if (spell_dice == 1){return destello_regenerador_ruiz(attacker, enemy);} 
             else {return descarga_vital(attacker, enemy);}
         }
         else if (classes[dice] == 1 && dice == 3)

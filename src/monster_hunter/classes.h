@@ -5,7 +5,11 @@
 
 struct clase;
 typedef struct clase Clase;
-int active_players = [NULL, NULL, NULL, NULL, NULL];
+Clase** active_players;
+active_players[0] = NULL;
+active_players[1] = NULL;
+active_players[2] = NULL;
+active_players[3] = NULL;
 
 struct clase
 {
@@ -33,7 +37,8 @@ void corte_cruzado(Clase* attacker, Clase* enemy);
 void distraer(Clase* attacker, Clase* enemy);
 
 void curar(Clase* attacker, Clase* friend);
-void destello_regenerador(Clase* attacker, Clase* friend);
+void destello_regenerador(Clase* attacker, Clase** friends, int num_friends, Clase* enemy);
+void destello_regenerador_ruiz(Clase* attacker, Clase* enemy);
 void descarga_vital(Clase* attacker, Clase* enemy);
 
 void inyeccion_sql(Clase* attacker, Clase* enemy);
