@@ -46,6 +46,7 @@ Clase* clase_init(int type)
         clase -> type = type;
         clase -> initial_health = 10000;
         clase -> current_health = clase -> initial_health;
+        clase -> name = "Great JagRuz";
     }
 
     else if (type == 4)
@@ -53,6 +54,7 @@ Clase* clase_init(int type)
         clase -> type = type;
         clase -> initial_health = 20000;
         clase -> current_health = clase -> initial_health;
+        clase -> name = "Ruzalos";
     }
 
     else if (type == 5)
@@ -60,6 +62,7 @@ Clase* clase_init(int type)
         clase -> type = type;
         clase -> initial_health = 25000;
         clase -> current_health = clase -> initial_health;
+        clase -> name = "Ruiz, el Gemelo Malvado del Profesor Ruz";
     }
     //clase -> name = name;
     int aver = introduce_player(clase);
@@ -356,7 +359,7 @@ void ruiz_turn(Clase* attacker, Clase* enemy)
 void game_statistics(Clase* enemy)
 {
     //3: GreatJagRuz, 4: Ruzalos, 5: Ruiz
-    char** type;
+    char* type[6];
     type[0] = "Cazador";
     type[1] = "Médico";
     type[2] = "Hacker";

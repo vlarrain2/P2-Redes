@@ -37,17 +37,6 @@ int main (int argc, char *argv[]){
 
       printf("####################\n¿Qué clase desea?\n   1)Cazador\n   2)Médico\n   3)Hacker\n####################\n");
       char* option = get_input();
-      // getchar(); //Para capturar el "enter" que queda en el buffer de entrada stdin
-      // char* class;
-      // if (option == 1){
-      //   class = "Cazador";
-      // }
-      // else if (option == 2){
-      //   class = "Médico";
-      // }
-      // else if (option == 3){
-      //   class = "Hacker";
-      // }
       client_send_message(server_socket, 1, option);
     }
 
@@ -69,7 +58,7 @@ int main (int argc, char *argv[]){
 
       printf("\n   1)Sí\n   2)No\n");
       char* option = get_input(); //Para capturar el "enter" que queda en el buffer de entrada stdin
-      client_send_message(server_socket, 3, option);//confirmación inicio de juego
+      client_send_message(server_socket, 6, option);//confirmación inicio de juego
     }
 
     if (msg_code == 4){
@@ -95,12 +84,23 @@ int main (int argc, char *argv[]){
     {
       char * message = client_receive_payload(server_socket);
       printf("########################\n");
+      printf("Objetivo:\n");
       printf("%s\n", message);
       printf("########################\n");
       free(message);
 
       char* obj = get_input();
       client_send_message(server_socket, 5, obj);
+    }
+    if (msg_code == 7)
+    {
+      char * message = client_receive_payload(server_socket);
+      printf("########################\n");
+      printf("%s\n", message);
+      printf("########################\n");
+      free(message);
+      char* monster = get_input();
+      client_send_message(server_socket, 3, monster);
     }
     printf("------------------\n");
   }
