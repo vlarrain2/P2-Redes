@@ -28,6 +28,7 @@ struct clase
     bool reprobado;// 0: normal, 1: reprobado
     bool lider;
     Clase* target; //indica el cazador que debe ser atacado en el próximo turno si está distraido
+    int habilidad;
 };
 
 int count_players();

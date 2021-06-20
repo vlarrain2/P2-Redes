@@ -78,16 +78,29 @@ int main (int argc, char *argv[]){
       printf("%s\n", message);
       printf("########################\n");
       free(message);
-      int option = getchar() - '0'; //Para capturar el "enter" que queda en el buffer de entrada stdin
-      getchar();
+      //int option = getchar() - '0'; //Para capturar el "enter" que queda en el buffer de entrada stdin
+      //getchar();
 
-      printf("Ingrese objetivo:\n");
-      char* objective = get_input();
-      client_send_message(server_socket, option + 3, objective);//confirmación inicio de juego
+      char* option = get_input();
+
+      //printf("Ingrese objetivo:\n");
+      //char* objective = get_input();
+      client_send_message(server_socket, 4, option);//confirmación inicio de juego
 
     }
     if (msg_code == 5){
       client_send_message(server_socket, 3, "hola");
+    }
+    if (msg_code == 6)
+    {
+      char * message = client_receive_payload(server_socket);
+      printf("########################\n");
+      printf("%s\n", message);
+      printf("########################\n");
+      free(message);
+
+      char* obj = get_input();
+      client_send_message(server_socket, 5, obj);
     }
     printf("------------------\n");
   }

@@ -1,11 +1,13 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "comunication.h"
 #include "conection.h"
 #include "classes.h"
 
 Clase* players[4];
+int num_of_players = 0;
 
 char * revert(char * message){
   //Se invierte el mensaje
@@ -47,6 +49,7 @@ int main(int argc, char *argv[]){
       int class = atoi(client_class);
       class --;
       players[my_attention] = clase_init(class);
+      num_of_players++;
       printf("El cliente %d es de clase %d", my_attention + 1, players[my_attention]->type);
       
       // Le enviamos la respuesta
@@ -93,66 +96,78 @@ int main(int argc, char *argv[]){
       //my_attention = (my_attention + 1) % 4;
 
     }
-    //dependiendo de la clase, s manejan en orden las funciones, 
-    //esto según el ataque que se elija.
-    if (msg_code == 4){
-      //manejo funcion 1
-      char * objective = server_receive_payload(sockets_array[my_attention]);
-      int obj = atoi(objective);
-      int class = players[my_attention] -> type;
-      if (class == 0){
-        estocada(players[my_attention], players[obj]);
+    if (msg_code == 4)
+    {
+      players[my_attention] -> habilidad = atoi(server_receive_payload(sockets_array[my_attention]));
+      char* message = "Objetivo:\n";
+      char* player;
+      for (int i = 0; i < num_of_players; i++)
+      {
+        sprintf(player, "%d) %s\n", i + 1, players[i] -> name);
+        strcat(message, player);
       }
-
-      else if (class == 1){
-        curar(players[my_attention], players[obj]);
-      }
-
-      else if (class == 2){
-        inyeccion_sql(players[my_attention], players[obj]);
-      }
-      my_attention = (my_attention + 1) % 4;
-      server_send_message(sockets_array[my_attention], 5, "hola");
+      server_send_message(sockets_array[my_attention], 6, message);
     }
-    if (msg_code == 5){
-      //manejo funcion 2
+
+    if (msg_code == 5)
+    {
+      //dependiendo de la clase, s manejan en orden las funciones, 
+      //esto según el ataque que se elija.
       char * objective = server_receive_payload(sockets_array[my_attention]);
-      int obj = atoi(objective);
+      int obj = atoi(objective) - 1;
       int class = players[my_attention] -> type;
-      if (class == 0){
-        corte_cruzado(players[my_attention], players[obj]);
-      }
 
-      else if (class == 1){
-        //destello_regenerador(players[my_attention], players[obj]);
-      }
+      if (players[my_attention] -> habilidad == 1){
+        //manejo funcion 1
+        if (class == 0){
+          estocada(players[my_attention], players[obj]);
+        }
 
-      else if (class == 2){
-        ataque_ddos(players[my_attention], players[obj]);
-      }
-      my_attention = (my_attention + 1) % 4;
-      server_send_message(sockets_array[my_attention], 5, "hola");
+        else if (class == 1){
+          curar(players[my_attention], players[obj]);
+        }
 
+        else if (class == 2){
+          inyeccion_sql(players[my_attention], players[obj]);
+        }
+        my_attention = (my_attention + 1) % 4;
+        server_send_message(sockets_array[my_attention], 5, "hola");
+      }
+      if (players[my_attention] -> habilidad == 2){
+        //manejo funcion 2
+        if (class == 0){
+          corte_cruzado(players[my_attention], players[obj]);
+        }
+
+        else if (class == 1){
+          //destello_regenerador(players[my_attention], players[obj]);
+        }
+
+        else if (class == 2){
+          ataque_ddos(players[my_attention], players[obj]);
+        }
+        my_attention = (my_attention + 1) % 4;
+        server_send_message(sockets_array[my_attention], 5, "hola");
+
+      }
+      if (players[my_attention] -> habilidad == 3){
+        //manejo funcion 3
+        if (class == 0){
+          distraer(players[my_attention], players[obj]);
+        }
+
+        else if (class == 1){
+          descarga_vital(players[my_attention], players[obj]);
+        }
+
+        else if (class == 2){
+          fuerza_bruta(players[my_attention], players[obj]);
+        }
+        my_attention = (my_attention + 1) % 4;
+        server_send_message(sockets_array[my_attention], 5, "hola");
+      }
     }
-    if (msg_code == 6){
-      //manejo funcion 3
-      char * objective = server_receive_payload(sockets_array[my_attention]);
-      int obj = atoi(objective);
-      int class = players[my_attention] -> type;
-      if (class == 0){
-        distraer(players[my_attention], players[obj]);
-      }
 
-      else if (class == 1){
-        descarga_vital(players[my_attention], players[obj]);
-      }
-
-      else if (class == 2){
-        fuerza_bruta(players[my_attention], players[obj]);
-      }
-      my_attention = (my_attention + 1) % 4;
-      server_send_message(sockets_array[my_attention], 5, "hola");
-    }
     
     printf("------------------\n");
   }
