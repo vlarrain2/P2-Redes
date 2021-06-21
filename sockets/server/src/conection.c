@@ -174,7 +174,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                 }
                 else if (!names[i])
                 {
-                    message = "Elige la clase que quieres ocupar\n[0] Cazador\n[1] Médico\n[2] Hacker\n";
+                    message = "Elige la clase que quieres ocupar\n[1] Cazador\n[2] Médico\n[3] Hacker\n";
                     server_send_message(sd, 1, message);
                     names[i] = payload_received;
                 }
@@ -183,10 +183,15 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                     int type = atoi(payload_received); //cambiar
                     if ( type == 1)
                     {
-                        printf("JUGADOR %d: (%s) => Cazador\n", n_jugador, names[i]);types[i] = type;
+                        types[i] = type;
                         Clase* jugador = clase_init(types[i]-1, names[i], i);
                         active_players[i] = jugador;
-                        printf("EXISTE %s\n", active_players[i] -> name);
+                        if (i != 0){
+                        char buffer[60];
+                        snprintf(buffer, sizeof(buffer), "SE HA UNIDO EL JUGADOR %d: (%s) => Cazador\n", n_jugador, names[i]);
+                        server_send_message(client_socket[0], 0, buffer);
+                        }
+
                     }
                     else if ( type == 2)
                     {
@@ -194,7 +199,11 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                         types[i] = type;
                         Clase* jugador = clase_init(types[i]-1, names[i],i);
                         active_players[i] = jugador;
-                        printf("EXISTE %s\n", active_players[i] -> name);
+                        if (i != 0){
+                        char buffer[60];
+                        snprintf(buffer, sizeof(buffer), "SE HA UNIDO EL JUGADOR %d: (%s) => Medico\n", n_jugador, names[i]);
+                        server_send_message(client_socket[0], 0, buffer);
+                        }
                     }
                     else if ( type == 3)
                     {
@@ -202,19 +211,23 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                         types[i] = type;
                         Clase* jugador = clase_init(types[i]-1, names[i],i);
                         active_players[i] = jugador;
-                        printf("EXISTE %s\n", active_players[i] -> name);
+                        if (i != 0){
+                        char buffer[60];
+                        snprintf(buffer, sizeof(buffer), "SE HA UNIDO EL JUGADOR %d: (%s) => Hacker\n", n_jugador, names[i]);
+                        server_send_message(client_socket[0], 0, buffer);
+                        }
                     }
-                    else{message = "Elección inválida. \nElige la clase que quieres ocupar\n[0] Cazador\n[1] Médico\n[2] Hacker\n";server_send_message(sd, 0, message);}
+                    else{message = "Elección inválida. \nElige la clase que quieres ocupar\n[1] Cazador\n[2] Médico\n[3] Hacker\n";server_send_message(sd, 1, message);}
                     if ((type == 1) || (type == 2) || (type == 3))
                     {
                         if (i == 0){
-                            message = "Elige el monstruo contra el que quieres combatir\n[3] Great JagRuz\n[4] Ruzalos\n[5] Ruiz, el Gemelo Malvado del Profesor Ruz\n";
+                            message = "Elige el monstruo contra el que quieres combatir\n[4] Great JagRuz\n[5] Ruzalos\n[6] Ruiz, el Gemelo Malvado del Profesor Ruz\n--SI QUIERES REVISAR SI SE HAN UNIDO NUEVOS JUGADORES, PRESIONA ENTER SIN ELEGIR OPCIÓN--\n";
                             server_send_message(sd, 1, message);
                             printf("%s es el líder de la party\n", names[i]);
                         }
                         else{
                             message = "Espera a que el líder elija un MOSTRO e inicie la partida.\n";
-                            server_send_message(sd, 1, message);
+                            server_send_message(sd, 0, message);
                         }
                     }
                 }
@@ -224,16 +237,24 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                     if ( mostro == 4){printf("VAN A PELEAR CONTRA GREAT JAGRUZ\n");mostro_electo = true; enemy = clase_init(mostro - 1, "MOSTRO", 5);}
                     else if ( mostro == 5){printf("VAN A PELEAR CONTRA RUZALOS\n");mostro_electo = true; enemy = clase_init(mostro -1, "MOSTRO", 5);}
                     else if ( mostro == 6){printf("VAN A PELEAR CONTRA RUIZ, EL GEMELO MALVADO DEL PROFESOR RUZ\n");mostro_electo = true; enemy = clase_init(mostro - 1, "MOSTRO", 5);}
-                    else{message = "Elección inválida. \nElige el monstruo contra el que quieres combatir\n[3] Great JagRuz\n[4] Ruzalos\n[5] Ruiz, el Gemelo Malvado del Profesor Ruz\n";server_send_message(sd, 0, message);}
+                    else if (mostro == 7)
+                    {
+                        printf("Eligiendo un monstruo aleatorio...\n");
+                        mostro = (rand() % 3) + 4;
+                        if ( mostro == 4){printf("VAN A PELEAR CONTRA GREAT JAGRUZ\n");mostro_electo = true; enemy = clase_init(mostro - 1, "MOSTRO", 5);}
+                        else if ( mostro == 5){printf("VAN A PELEAR CONTRA RUZALOS\n");mostro_electo = true; enemy = clase_init(mostro - 1, "MOSTRO", 5);}
+                        else if ( mostro == 6){printf("VAN A PELEAR CONTRA RUIZ, EL GEMELO MALVADO DEL PROFESOR RUZ\n");mostro_electo = true; enemy = clase_init(mostro - 1, "MOSTRO", 5);}
+                    }
+                    else{message = "\nElige el monstruo contra el que quieres combatir\n[4] Great JagRuz\n[5] Ruzalos\n[6] Ruiz, el Gemelo Malvado del Profesor Ruz\n[7] Monstruo Aleatorio\n--SI QUIERES REVISAR SI SE HAN UNIDO NUEVOS JUGADORES, PRESIONA ENTER SIN ELEGIR OPCIÓN--\n";server_send_message(sd, 1, message);}
                     if ((mostro == 4) || (mostro == 5) || (mostro == 6))
                     {
                         if (i == 0){
-                            message = "SI ESTÁN TODOS LOS JUGADORES LISTOS, PRESIONA CUALQUIER TECLA PARA INICIAR LA PARTIDA\n";
+                            message = "SI ESTÁN TODOS LOS JUGADORES LISTOS, PRESIONA ENTER PARA INICIAR LA PARTIDA\n";
                             server_send_message(sd, 1, message);
                         }
                         else{
                             message = "Espera a que el líder elija un MOSTRO e inicie la partida.\n";
-                            server_send_message(sd, 1, message);
+                            server_send_message(sd, 0, message);
                         }
                     }
                 }
@@ -247,7 +268,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                     else
                     {
                         message = "ASEGÚRATE DE QUE ESTÉN TODOS LISTOS E INTÉNTALO NUEVAMENTE\n";
-                        server_send_message(sd, 2, message);
+                        server_send_message(sd, 1, message);
                     }
                 }
                 // int type = server_receive_id(new_socket);
