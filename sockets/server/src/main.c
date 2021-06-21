@@ -25,9 +25,10 @@ char * habilities(int type){
 
 void die(int my_attention, int* sockets_array)
 {
+  free(players[my_attention]);
   for (int i = my_attention; i < (num_of_players - 1); i++)
   {
-    free(players[i]);
+    //free(players[i]);
     players[i] = players[i + 1];
     active_players[i] = active_players[i + 1];
   }
@@ -122,6 +123,7 @@ int main(int argc, char *argv[]){
     {
       char* habilidad = server_receive_payload(sockets_array[my_attention]);
       players[my_attention] -> habilidad = atoi(habilidad);
+      free(habilidad);
       if (players[my_attention] -> habilidad == 4){
         server_send_message(sockets_array[my_attention], 8, "Te rendiste perdedor\n");
         die(my_attention, sockets_array);
@@ -151,6 +153,7 @@ int main(int argc, char *argv[]){
       //esto según el ataque que se elija.
       char * objective = server_receive_payload(sockets_array[my_attention]);
       int obj = atoi(objective) - 1;
+      free(objective);
       int class = players[my_attention] -> type;
       printf("Habilidad de %s: %d\n", players[my_attention] -> name, players[my_attention] -> habilidad);
 
@@ -307,6 +310,7 @@ int main(int argc, char *argv[]){
       //Great JagRuz - Ruzalos -  Ruiz, el Gemelo Malvado del Profesor Ruz - aleatorio
       char* response = server_receive_payload(sockets_array[my_attention]);
       int message = atoi(response);
+      free(response);
       if (message == 2)
       {
         server_send_message(sockets_array[my_attention], 3, "¿Quieres iniciar el juego?");
@@ -331,12 +335,11 @@ int main(int argc, char *argv[]){
   {
     if (active_players[i])
     {
-      free(players[i]);
+      //free(players[i]);
       free(active_players[i]);
     }
   }
   free(enemy);
-  free(players[5]);
 
   return 0;
 }
