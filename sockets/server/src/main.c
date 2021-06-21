@@ -27,6 +27,7 @@ void die(int my_attention, int* sockets_array)
 {
   for (int i = my_attention; i < (num_of_players - 1); i++)
   {
+    free(players[i]);
     players[i] = players[i + 1];
     active_players[i] = active_players[i + 1];
   }
