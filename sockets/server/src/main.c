@@ -15,7 +15,7 @@ char * habilities(int type){
     message = "¿Qué habilidad escoge?\n   1)Estocada\n   2)Corte Cruzado\n   3)Distraer\n   4)Me rindo :(\n";
   }
   else if (type == 1){
-    message = "¿Qué habilidad escoge?\n   1)Curar\n   2)Destello regenerador\n   3)Descarga vital\n   4)Me rindo (~Hello World):(\n";
+    message = "¿Qué habilidad escoge?\n   1)Curar\n   2)Destello regenerador\n   3)Descarga vital\n   4)Me rindo :(\n";
   }
   else if (type == 2){
     message = "¿Qué habilidad escoge?\n   1)Inyección SQL\n   2)Ataque DDOS\n   3)Fuerza Bruta\n   4)Me rindo :(\n";
@@ -129,6 +129,7 @@ int main(int argc, char *argv[]){
           printf("Ganó %s\n", players[0] -> name);
           break;
         }
+        
         char * hability_msg = habilities(players[my_attention]->type);
         server_send_message(sockets_array[my_attention], 4, hability_msg);
       } else
@@ -233,6 +234,10 @@ int main(int argc, char *argv[]){
       {
         //si el ultimo jugador no es de tipo monstruo, entonces el monstruo murió y se acaba el juego
         printf("Muerte del monstruo, fin del juego\n");
+        for (int i = 0; i < num_of_players; i++)
+        {
+          server_send_message(sockets_array[i], 8, "El monstruo murió, fin del juego\n");
+        }
         break;
       }
 
@@ -241,6 +246,7 @@ int main(int argc, char *argv[]){
         if (players[i] -> id == current_player_id)
         {
           my_attention = i;
+          break;
         }
       }
 
@@ -276,14 +282,15 @@ int main(int argc, char *argv[]){
         }
         printf("Usuario atacado\n");
 
+        if (num_of_players == 1)
+        {
+          printf("Ganó %s\n", players[0] -> name);
+          break;
+        }
+
       }
       
-      
-      if (num_of_players == 1)
-      {
-        printf("Ganó %s\n", players[0] -> name);
-        break;
-      }
+    
       
       char * hability_msg = habilities(players[my_attention]->type);
       server_send_message(sockets_array[my_attention], 4, hability_msg);
