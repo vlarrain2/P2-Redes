@@ -7,6 +7,7 @@ struct clase;
 typedef struct clase Clase;
 int rounds;
 Clase* active_players[4];
+Clase* enemy;
 
 struct clase
 {
@@ -35,7 +36,7 @@ struct clase
 int count_players();
 void set_active_players();
 int introduce_player(Clase* player);
-Clase* clase_init(int type, int id);
+Clase* clase_init(int type, char* name, int id);
 
 //jugadores
 void estocada(Clase* attacker, Clase* enemy);

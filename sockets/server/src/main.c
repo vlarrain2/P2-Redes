@@ -41,19 +41,26 @@ void die(int my_attention, int* sockets_array)
 
 int main(int argc, char *argv[]){
   // Se define una IP y un puerto
-  char * IP = "0.0.0.0";
-  int PORT = 8080;
+  char * IP = argv[2];
+  int PORT = atoi(argv[4]);
 
   // Se crea el servidor y se obtienen los sockets de ambos clientes.
   PlayersInfo * players_info = prepare_sockets_and_get_clients(IP, PORT);
+  num_of_players = count_players() + 1;
+  for (int i=0;i<(num_of_players - 1);i++){
+    players[i] = active_players[i];
+  }
+  players[num_of_players -1] = enemy;
 
   // Le enviamos al primer cliente un mensaje de bienvenida
-  char * welcome = "Bienvenido Cliente 1!!";
-  server_send_message(players_info->socket_c1, 1, welcome);
+  //char * welcome = "Bienvenido Cliente 1!!";
+  //server_send_message(players_info->socket_c1, 1, welcome);
 
   // Guardaremos los sockets en un arreglo e iremos alternando a quién escuchar.
   int sockets_array[4] = {players_info->socket_c1, players_info->socket_c2, players_info->socket_c3, players_info->socket_c4};
   int my_attention = 0;
+  char * hability_msg = habilities(players[0]->type);
+  server_send_message(sockets_array[0], 4, hability_msg);
   while (1)
   {
     // Se obtiene el paquete del cliente 1
@@ -61,53 +68,53 @@ int main(int argc, char *argv[]){
 
     if (msg_code == 1) //El cliente me envió un mensaje a mi (servidor)
     {
-      char* client_class = server_receive_payload(sockets_array[my_attention]);
-      int class = atoi(client_class);
-      class --;
-      players[my_attention] = clase_init(class, my_attention);
-      num_of_players++;
-      printf("El cliente %d es de clase %d", my_attention + 1, players[my_attention]->type);
+      // char* client_class = server_receive_payload(sockets_array[my_attention]);
+      // int class = atoi(client_class);
+      // class --;
+      // players[my_attention] = clase_init(class, my_attention);
+      // num_of_players++;
+      // printf("El cliente %d es de clase %d", my_attention + 1, players[my_attention]->type);
       
-      // Le enviamos la respuesta
-      server_send_message(sockets_array[my_attention], 2, client_class);
+      // // Le enviamos la respuesta
+      // server_send_message(sockets_array[my_attention], 2, client_class);
     }
     
     else if (msg_code == 2){ //El cliente le envía un mensaje al otro cliente
-      char * client_message = server_receive_payload(sockets_array[my_attention]);
-      players[my_attention] -> name = client_message;
-      printf("El cliente %d tiene clase %d y nombre %s\n", my_attention + 1, players[my_attention] -> type, players[my_attention] -> name);
-      //printf("Cliente %d ingresado correctamente:\n    nombre: %s\n", my_attention + 1, client_message);
-      printf("Servidor dando la bienvenida a jugador %d\n", my_attention+2);
-      if (my_attention == 3){
-        //mensaje para líder, para iniciar el juego
-        my_attention = 0;
-        server_send_message(sockets_array[0], 3, "¿Quieres iniciar el juego?"); 
-      }
-      else{
-        // Mi atención cambia al otro socket
-        my_attention++;
-        server_send_message(sockets_array[my_attention], 1, "Bienvenido!");
-      }
+      // char * client_message = server_receive_payload(sockets_array[my_attention]);
+      // players[my_attention] -> name = client_message;
+      // printf("El cliente %d tiene clase %d y nombre %s\n", my_attention + 1, players[my_attention] -> type, players[my_attention] -> name);
+      // //printf("Cliente %d ingresado correctamente:\n    nombre: %s\n", my_attention + 1, client_message);
+      // printf("Servidor dando la bienvenida a jugador %d\n", my_attention+2);
+      // if (my_attention == 3){
+      //   //mensaje para líder, para iniciar el juego
+      //   my_attention = 0;
+      //   server_send_message(sockets_array[0], 3, "¿Quieres iniciar el juego?"); 
+      // }
+      // else{
+      //   // Mi atención cambia al otro socket
+      //   my_attention++;
+      //   server_send_message(sockets_array[my_attention], 1, "Bienvenido!");
+      // }
     }
     if (msg_code == 3){
       //eleccion de monstruo y se inicia el primer turno
-      char * message = server_receive_payload(sockets_array[my_attention]);
-      printf("Cliente %d dice %s\n", my_attention + 1, message);
+      // char * message = server_receive_payload(sockets_array[my_attention]);
+      // printf("Cliente %d dice %s\n", my_attention + 1, message);
 
-      int monster = atoi(message);
-      if (monster != 4){
-        players[num_of_players] = clase_init(monster + 2, num_of_players);
-        num_of_players++;
-      }
-      else{
-        //monstruo aleatorio
-        int num = (rand() % (5 - 3 + 1)) + 3;  // se elige un random entre 3 y 5
-        players[num_of_players] = clase_init(num, num_of_players);
-        num_of_players++;
-      }
+      // int monster = atoi(message);
+      // if (monster != 4){
+      //   players[num_of_players] = clase_init(monster + 2, num_of_players);
+      //   num_of_players++;
+      // }
+      // else{
+      //   //monstruo aleatorio
+      //   int num = (rand() % (5 - 3 + 1)) + 3;  // se elige un random entre 3 y 5
+      //   players[num_of_players] = clase_init(num, num_of_players);
+      //   num_of_players++;
+      // }
 
-      char * hability_msg = habilities(players[my_attention]->type);
-      server_send_message(sockets_array[my_attention], 4, hability_msg);
+      // char * hability_msg = habilities(players[my_attention]->type);
+      // server_send_message(sockets_array[my_attention], 4, hability_msg);
 
     }
     if (msg_code == 4)

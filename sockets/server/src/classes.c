@@ -17,10 +17,11 @@ int count_players()
     return n;
 }
 
-Clase* clase_init(int type, int id)
+Clase* clase_init(int type, char* name, int id)
 {
     Clase* clase = malloc(sizeof(Clase));
     clase -> id = id;
+    clase -> name = name;
     if (type == 0)
     {
         clase -> type = type;

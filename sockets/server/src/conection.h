@@ -7,7 +7,17 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <fcntl.h>
 #include "comunication.h"
+
+#include "comunication.h"
+#include "classes.h"
+
+#include <string.h>   //strlen
+#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros 
+     
+#define TRUE   1 
+#define FALSE  0
 
 //http://manpages.ubuntu.com/manpages/trusty/man7/sys_socket.h.7posix.html
 //https://pubs.opengroup.org/onlinepubs/009695399/basedefs/sys/types.h.html

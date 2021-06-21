@@ -20,8 +20,8 @@ char * get_input(){
 
 int main (int argc, char *argv[]){
   //Se obtiene la ip y el puerto donde está escuchando el servidor (la ip y puerto de este cliente da igual)
-  char * IP = "0.0.0.0";
-  int PORT = 8080;
+  char * IP = argv[2];
+  int PORT = atoi(argv[4]);
 
   // Se prepara el socket
   int server_socket = prepare_socket(IP, PORT);
@@ -32,12 +32,18 @@ int main (int argc, char *argv[]){
 
     if (msg_code == 1) { //Recibimos un mensaje del servidor
       char * message = client_receive_payload(server_socket);
-      printf("%s\n", message);
+      printf("El servidor dice:\n %s", message);
+      // if (msg_code == 1)
+      // {
       free(message);
-
-      printf("####################\n¿Qué clase desea?\n   1)Cazador\n   2)Médico\n   3)Hacker\n####################\n");
-      char* option = get_input();
+      char * option = get_input();
+      //getchar(); //Para capturar el "enter" que queda en el buffer de entrada stdin
       client_send_message(server_socket, 1, option);
+    
+
+      // printf("####################\n¿Qué clase desea?\n   1)Cazador\n   2)Médico\n   3)Hacker\n####################\n");
+      // char* option = get_input();
+      // client_send_message(server_socket, 1, option);
     }
 
     if (msg_code == 2) { //Recibimos un mensaje del servidor pidiendo nombre
