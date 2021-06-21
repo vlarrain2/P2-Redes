@@ -192,7 +192,6 @@ void descarga_vital(Clase* attacker, Clase* enemy)
 
 void inyeccion_sql(Clase* attacker, Clase* friend)
 {
-    // bool de inyeccion y numero que dure 2 turnos? para duplicar mientras bool sea true
     friend -> duplicated_attack = 1;
     friend -> rounds_duplicated = 0;
 }

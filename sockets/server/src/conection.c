@@ -271,6 +271,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                         server_send_message(sd, 1, message);
                     }
                 }
+                free(payload_received);
                 // int type = server_receive_id(new_socket);
                 // if ( type == 1){printf("JUGADOR %d: %s => Cazador\n", n_jugador, payload_received);}
                 // else if ( type == 2){printf("JUGADOR %d: %s => Médico\n", n_jugador, payload_received);}
