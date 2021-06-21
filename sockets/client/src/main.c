@@ -46,6 +46,7 @@ int main (int argc, char *argv[]){
       char * option = get_input();
       //getchar(); //Para capturar el "enter" que queda en el buffer de entrada stdin
       client_send_message(server_socket, 1, option);
+      free(option);
     
 
       // printf("####################\n¿Qué clase desea?\n   1)Cazador\n   2)Médico\n   3)Hacker\n####################\n");
@@ -61,6 +62,7 @@ int main (int argc, char *argv[]){
       printf("Ingrese nombre de usuario:");
       name = get_input();
       client_send_message(server_socket, 2, name);
+      free(name);
 
     }
 
@@ -88,6 +90,7 @@ int main (int argc, char *argv[]){
       //printf("Ingrese objetivo:\n");
       //char* objective = get_input();
       client_send_message(server_socket, 4, option);//confirmación inicio de juego
+      free(option);
 
     }
     if (msg_code == 5){
@@ -104,6 +107,7 @@ int main (int argc, char *argv[]){
 
       char* obj = get_input();
       client_send_message(server_socket, 5, obj);
+      free(obj);
     }
     if (msg_code == 7)
     {
@@ -114,6 +118,7 @@ int main (int argc, char *argv[]){
       free(message);
       char* monster = get_input();
       client_send_message(server_socket, 3, monster);
+      free(monster);
     }
 
     if (msg_code == 8)

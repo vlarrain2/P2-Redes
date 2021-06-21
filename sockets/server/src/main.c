@@ -58,6 +58,7 @@ int main(int argc, char *argv[]){
 
   // Guardaremos los sockets en un arreglo e iremos alternando a quién escuchar.
   int sockets_array[4] = {players_info->socket_c1, players_info->socket_c2, players_info->socket_c3, players_info->socket_c4};
+  //free(players_info);
   int my_attention = 0;
   char * hability_msg = habilities(players[0]->type);
   server_send_message(sockets_array[0], 4, hability_msg);
@@ -318,6 +319,6 @@ int main(int argc, char *argv[]){
     
     printf("------------------\n");
   }
-
+  free(players_info);
   return 0;
 }
