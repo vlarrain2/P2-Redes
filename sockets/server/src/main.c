@@ -312,5 +312,17 @@ int main(int argc, char *argv[]){
     printf("------------------\n");
   }
 
+
+  //FREES HECHOS PARA VER EL VALGRIND DEL LOBBY, 0 LEAKS
+  free(players_info);
+  for (int i = 0; i < 4; i++)
+  {
+    if (active_players[i])
+    {
+      free(active_players[i]);
+    }
+  }
+  free(enemy);
+
   return 0;
 }

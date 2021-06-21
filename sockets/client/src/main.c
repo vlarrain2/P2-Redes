@@ -30,6 +30,16 @@ int main (int argc, char *argv[]){
   while (1){
     int msg_code = client_receive_id(server_socket);
 
+
+    //ESTO CON CODE == 9 LO HICE PARA PROBAR EL VALGRIND DEL LOBBY Y FUNCIONA.
+    // if (msg_code == 9)
+    // {
+    //   char * message = client_receive_payload(server_socket);
+    //   printf("SE DEBERIA ACABAR EL PROGRAMA\n%s", message);
+    //   free(message);
+    //   break;
+    // }
+
     if(msg_code == 0)
     {
       char * message = client_receive_payload(server_socket);
@@ -46,6 +56,7 @@ int main (int argc, char *argv[]){
       char * option = get_input();
       //getchar(); //Para capturar el "enter" que queda en el buffer de entrada stdin
       client_send_message(server_socket, 1, option);
+      free(option);
     
 
       // printf("####################\n¿Qué clase desea?\n   1)Cazador\n   2)Médico\n   3)Hacker\n####################\n");

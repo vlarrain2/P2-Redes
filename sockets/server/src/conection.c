@@ -82,6 +82,10 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
             if (active_players[1]){sockets_clients -> socket_c2 = client_socket[1];}
             if (active_players[2]){sockets_clients -> socket_c3 = client_socket[2];}
             if (active_players[3]){sockets_clients -> socket_c4 = client_socket[3];}
+            for (int i = 0; i < 4; i++)
+            {
+                free(names[i]);
+            }
             return sockets_clients;
         }
 
@@ -132,7 +136,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
             //send new connection greeting message 
 
             n_jugador += 1;
-            message = "Bienvenido a Monster Hunter: Ruiz\n ¿Cuál es tu nombre?\n";
+            message = "Bienvenido a Monster Hunter: Ruiz\n ¿Cuál es tu nombre? (no más de 30 caracteres)\n";
             server_send_message(new_socket, 1, message);
 
 
@@ -174,13 +178,18 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                 }
                 else if (!names[i])
                 {
+                    char * name = calloc(30, sizeof(char));
+                    strcpy(name, payload_received);
                     message = "Elige la clase que quieres ocupar\n[1] Cazador\n[2] Médico\n[3] Hacker\n";
                     server_send_message(sd, 1, message);
-                    names[i] = payload_received;
+                    names[i] = name;
                 }
                 else if (!types[i])
                 {
-                    int type = atoi(payload_received); //cambiar
+                    char * type_str = calloc(20, sizeof(char));
+                    strcpy(type_str, payload_received);
+                    int type = atoi(type_str); //cambiar
+                    free(type_str);
                     if ( type == 1)
                     {
                         types[i] = type;
@@ -233,7 +242,10 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                 }
                 else if ((i == 0) && (!mostro_electo))
                 {
-                    int mostro = atoi(payload_received);
+                    char * mostro_str = calloc(20, sizeof(char));
+                    strcpy(mostro_str, payload_received);
+                    int mostro = atoi(mostro_str);
+                    free(mostro_str);
                     if ( mostro == 4){printf("VAN A PELEAR CONTRA GREAT JAGRUZ\n");mostro_electo = true; enemy = clase_init(mostro - 1, "MOSTRO", 5);}
                     else if ( mostro == 5){printf("VAN A PELEAR CONTRA RUZALOS\n");mostro_electo = true; enemy = clase_init(mostro -1, "MOSTRO", 5);}
                     else if ( mostro == 6){printf("VAN A PELEAR CONTRA RUIZ, EL GEMELO MALVADO DEL PROFESOR RUZ\n");mostro_electo = true; enemy = clase_init(mostro - 1, "MOSTRO", 5);}
@@ -271,6 +283,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                         server_send_message(sd, 1, message);
                     }
                 }
+                free(payload_received);
                 // int type = server_receive_id(new_socket);
                 // if ( type == 1){printf("JUGADOR %d: %s => Cazador\n", n_jugador, payload_received);}
                 // else if ( type == 2){printf("JUGADOR %d: %s => Médico\n", n_jugador, payload_received);}
