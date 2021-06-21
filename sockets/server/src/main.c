@@ -153,14 +153,25 @@ int main(int argc, char *argv[]){
       int class = players[my_attention] -> type;
       printf("Habilidad de %s: %d\n", players[my_attention] -> name, players[my_attention] -> habilidad);
 
-      printf("______ESTE ES EL ESTADO ACTUAL DEL JUEGO______:\n");
-      for (int i = 0; i < num_of_players; i++)
-      {
-        printf("%s : %d  -> VIDA ACTUAL = %f / %d [%f] \n", players[i]->name, players[i] -> type, players[i] -> current_health, players[i] -> initial_health, (players[i] -> current_health / players[i] -> initial_health));
-      }
-      printf("_____________________________\n");
+      // printf("______ESTE ES EL ESTADO ACTUAL DEL JUEGO______:\n");
+      // for (int i = 0; i < num_of_players; i++)
+      // {
+      //   printf("%s : %d  -> VIDA ACTUAL = %f / %d [%f] \n", players[i]->name, players[i] -> type, players[i] -> current_health, players[i] -> initial_health, (players[i] -> current_health / players[i] -> initial_health));
+      // }
+      // printf("_____________________________\n");
 
-      printf("%s atacando a %s\n", players[my_attention] -> name, players[obj] -> name);
+      // printf("%s atacando a %s\n", players[my_attention] -> name, players[obj] -> name);
+      game_statistics(players[num_of_players-1]);
+
+      //actualizar bleeding
+      players[my_attention]->current_health -= (players[my_attention]->bleeding)*500;
+
+      //actualizar en caso de intoxicación
+      if ((players[my_attention]->intoxicated == 1) && (players[my_attention]->rounds_intoxicated>0))
+      {
+        players[my_attention]->current_health -= 450;
+        players[my_attention]->rounds_intoxicated --;
+      }
 
       if (players[my_attention] -> habilidad == 1){
         //manejo funcion 1
@@ -319,10 +330,12 @@ int main(int argc, char *argv[]){
   {
     if (active_players[i])
     {
+      free(players[i]);
       free(active_players[i]);
     }
   }
   free(enemy);
+  free(players[5]);
 
   return 0;
 }

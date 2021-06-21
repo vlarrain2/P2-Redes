@@ -230,7 +230,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
                     if ((type == 1) || (type == 2) || (type == 3))
                     {
                         if (i == 0){
-                            message = "Elige el monstruo contra el que quieres combatir\n[4] Great JagRuz\n[5] Ruzalos\n[6] Ruiz, el Gemelo Malvado del Profesor Ruz\n--SI QUIERES REVISAR SI SE HAN UNIDO NUEVOS JUGADORES, PRESIONA ENTER SIN ELEGIR OPCIÓN--\n";
+                            message = "Elige el monstruo contra el que quieres combatir\n[4] Great JagRuz\n[5] Ruzalos\n[6] Ruiz, el Gemelo Malvado del Profesor Ruz\n[7] Monstruo Aleatorio\n--SI QUIERES REVISAR SI SE HAN UNIDO NUEVOS JUGADORES, PRESIONA ENTER SIN ELEGIR OPCIÓN--\n";
                             server_send_message(sd, 1, message);
                             printf("%s es el líder de la party\n", names[i]);
                         }
