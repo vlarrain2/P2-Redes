@@ -25,7 +25,11 @@ char * habilities(int type){
 
 void die(int my_attention, int* sockets_array)
 {
-  free(players[my_attention]);
+  if (players[my_attention] -> type < 3)
+  {
+    free(players[my_attention] -> name);
+    free(players[my_attention]);
+  }
   for (int i = my_attention; i < (num_of_players - 1); i++)
   {
     //free(players[i]);
@@ -274,28 +278,38 @@ int main(int argc, char *argv[]){
         //antes de volver al jugador 1, el monstruo debe jugar
         int mons_obj = (rand()%(num_of_players - 1)); //elige uno de los 4 jugadores
         int mons_class = players[num_of_players - 1]->type;
-        printf("clase del monstruo: %d\n", mons_class);
         printf("Monstruo atacando a %s\n", players[mons_obj] -> name);
 
         if (mons_class == 3)
         {
-          printf("jagruz\n");
           great_jagruz_turn(players[num_of_players], players[mons_obj]);
-          printf("jagruz_end\n");
         }
         else if (mons_class == 4)
         {
-          printf("ruzalos\n");
           ruzalos_turn(players[num_of_players], players[mons_obj]);
-          printf("ruzalos end\n");
         }
         else if (mons_class == 5)
         {
-          printf("ruiz\n");
           ruiz_turn(players[num_of_players], players[mons_obj]);
-          printf("ruiz end\n");
         }
-        printf("Usuario atacado\n");
+        int dead[5];
+        int j = 0;
+        for (int i = 0; i < num_of_players; i++)
+        {
+          if (players[i] -> current_health <= 0)
+          {
+            dead[j] = i;
+            j++;
+          }
+        }
+        for (int i = 0; i < j; i++)
+        {
+          if (players[dead[i]] -> type < 3)
+          {
+            server_send_message(sockets_array[dead[i]], 8, "Moriste\n");
+          }
+          die(dead[i], sockets_array);
+        }
 
         if (num_of_players == 1)
         {
@@ -336,16 +350,18 @@ int main(int argc, char *argv[]){
   }
 
 
-  //FREES HECHOS PARA VER EL VALGRIND DEL LOBBY, 0 LEAKS
+  //freeS HECHOS PARA VER EL VALGRIND DEL LOBBY, 0 LEAKS
   free(players_info);
   for (int i = 0; i < 4; i++)
   {
     if (active_players[i])
     {
       //free(players[i]);
+      free(active_players[i] -> name);
       free(active_players[i]);
     }
   }
+  //free(enemy -> name);
   free(enemy);
 
   return 0;

@@ -84,7 +84,7 @@ PlayersInfo * prepare_sockets_and_get_clients(char * IP, int port)
             if (active_players[3]){sockets_clients -> socket_c4 = client_socket[3];}
             for (int i = 0; i < 4; i++)
             {
-                free(names[i]);
+                //free(names[i]);
             }
             return sockets_clients;
         }
